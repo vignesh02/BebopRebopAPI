@@ -81,7 +81,8 @@ typedef struct ARDISCOVERY_Connection_ConnectionData_t ARDISCOVERY_Connection_Co
 
 /**
  * @brief Create and initialize connection data
- * @param[in] callback Connection data management callback
+ * @param[in] callback for sent connection data
+ * @param[in] callback for received connection data
  * @param[in] customData custom data
  * @param[out] error Error code
  * @return new connection data object
