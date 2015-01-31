@@ -36,8 +36,6 @@ public:
 	std::vector<ARSAL_Thread_t>	m_tRxThreads;
 
 	// Attributes
-	int run;
-
 	CNetworkSettings m_networkSettings;
 
 	// Methods
@@ -48,6 +46,7 @@ public:
 	bool PerformNetworkDiscovery();
 	bool InitializeNetworkManager();
 	bool StartNetworkThreads();
+	void StopNetwork();
 	void Cleanup();
 
 	// Callbacks

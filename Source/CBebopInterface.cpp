@@ -1,33 +1,22 @@
-/*
- * CDeviceManager.cpp
- *
- *  Created on: Jan 29, 2015
- *      Author: spiderkeys
- */
-
+// Includes
 #include "CBebopInterface.h"
-
 #include "Utility.hpp"
 
+// Namespaces
 using namespace std;
 using namespace bebop;
 
 CBebopInterface::CBebopInterface()
 {
-	m_pNetworkALManager 				= nullptr;
-	m_pNetworkManager					= nullptr;
-	m_tRxThread							= NULL;
-	m_tTxThread							= NULL;
-
-	// Attributes
-	run 								= 1;
+	// Initialize pointers
+	m_pNetworkALManager 		= nullptr;
+	m_pNetworkManager			= nullptr;
+	m_tRxThread					= nullptr;
+	m_tTxThread					= nullptr;
 }
 
 CBebopInterface::~CBebopInterface()
 {
-	// Free pointers
-	ARNETWORK_Manager_Delete( &m_pNetworkManager );
-	ARNETWORKAL_Manager_Delete( &m_pNetworkALManager );
 }
 
 bool CBebopInterface::Initialize()
@@ -55,8 +44,6 @@ bool CBebopInterface::Initialize()
 	return true;
 }
 
-
-// Returns true if successful, false if failure
 bool CBebopInterface::PerformNetworkDiscovery()
 {
 	LOG( INFO ) << "Performing network discovery...";
@@ -152,6 +139,8 @@ bool CBebopInterface::InitializeNetworkManager()
 
 void CBebopInterface::Cleanup()
 {
+	// Close all connections, kill threads, and clean up memory used for networking
+	StopNetwork();
 }
 
 eARDISCOVERY_ERROR CBebopInterface::SendJsonCallback( uint8_t *txDataIn, uint32_t *txDataSizeIn, void *customDataIn )
@@ -211,6 +200,51 @@ bool bebop::CBebopInterface::StartNetworkThreads()
 	}
 
 	return true;
+}
+
+void CBebopInterface::StopNetwork()
+{
+	int failed = 0;
+
+	eARNETWORK_ERROR netError 		= ARNETWORK_OK;
+	eARNETWORKAL_ERROR netAlError 	= ARNETWORKAL_OK;
+
+	// ARNetwork cleanup
+	if( m_pNetworkManager != nullptr )
+	{
+		// Stop the network manager
+		ARNETWORK_Manager_Stop( m_pNetworkManager );
+
+		// Clean up the Rx thread
+		if( m_tRxThread != nullptr )
+		{
+			ARSAL_Thread_Join( m_tRxThread, nullptr );
+			ARSAL_Thread_Destroy( &( m_tRxThread ) );
+			m_tRxThread = nullptr;
+		}
+
+		// Clean up the Tx thread
+		if( m_tTxThread != nullptr )
+		{
+			ARSAL_Thread_Join( m_tTxThread, nullptr );
+			ARSAL_Thread_Destroy( &( m_tTxThread ) );
+			m_tTxThread = nullptr;
+		}
+	}
+
+	// Clean up Network Abstraction Layer Manager
+	if( m_pNetworkALManager != nullptr )
+	{
+		// Unlock the Network AL manager
+		ARNETWORKAL_Manager_Unlock( m_pNetworkALManager );
+
+		// Close the wifi network
+		ARNETWORKAL_Manager_CloseWifiNetwork( m_pNetworkALManager );
+	}
+
+	// Free memory for network managers
+	ARNETWORK_Manager_Delete( &m_pNetworkManager );
+	ARNETWORKAL_Manager_Delete( &m_pNetworkALManager );
 }
 
 eARDISCOVERY_ERROR CBebopInterface::ReceiveJsonCallback( uint8_t *rxDataIn, uint32_t rxDataSizeIn, char *ipIn, void *customDataIn )
