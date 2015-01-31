@@ -179,6 +179,9 @@ eARDISCOVERY_ERROR CBebopInterface::SendJsonCallback( uint8_t *txDataIn, uint32_
 
 void CBebopInterface::OnDisconnect( ARNETWORK_Manager_t* networkManagerIn, ARNETWORKAL_Manager_t* networkALManagerIn, void* customDataIn )
 {
+	LOG( INFO ) << "Disconnected from the target!";
+
+	// TODO: Attempt to reconnect?
 }
 
 bool bebop::CBebopInterface::StartNetworkThreads()
@@ -195,8 +198,6 @@ bool bebop::CBebopInterface::StartNetworkThreads()
 	{
 		LOG( ERROR ) << "Creation of Tx thread failed.";
 		return false;
-
-		// TODO: Do I need to clean up the rx thread here before returning from failure?
 	}
 
 	return true;

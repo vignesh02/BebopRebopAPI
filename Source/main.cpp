@@ -18,9 +18,10 @@ int main()
 		return 0;
 	}
 
-	// You're connected and ready to fly!
+	// You're connected and ready to fly! Do stuff here!
 
-	// Do stuff here
+	// Cleanup - Kill the network and clean up memory
+	bebopInterface.Cleanup();
 
 	return 0;
 }
