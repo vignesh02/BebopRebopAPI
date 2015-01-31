@@ -30,9 +30,10 @@ public:
 	ARNETWORKAL_Manager_t 		*m_pNetworkALManager;
 	ARNETWORK_Manager_t 		*m_pNetworkManager;
 
-	ARSAL_Thread_t 				m_pRxThread;
-	ARSAL_Thread_t 				m_pTxThread;
-	std::vector<ARSAL_Thread_t>	m_pReaderThreads;
+	// Threads
+	ARSAL_Thread_t 				m_tRxThread;
+	ARSAL_Thread_t 				m_tTxThread;
+	std::vector<ARSAL_Thread_t>	m_tRxThreads;
 
 	// Attributes
 	int run;
@@ -43,9 +44,10 @@ public:
 	CBebopInterface();
 	virtual ~CBebopInterface();
 
-	void Initialize();
-	bool NetworkDiscoveryConnection();
-	bool StartNetwork();
+	bool Initialize();
+	bool PerformNetworkDiscovery();
+	bool InitializeNetworkManager();
+	bool StartNetworkThreads();
 	void Cleanup();
 
 	// Callbacks

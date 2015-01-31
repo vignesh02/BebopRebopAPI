@@ -16,8 +16,8 @@ CBebopInterface::CBebopInterface()
 {
 	m_pNetworkALManager 				= nullptr;
 	m_pNetworkManager					= nullptr;
-	m_pRxThread							= 0;
-	m_pTxThread							= 0;
+	m_tRxThread							= NULL;
+	m_tTxThread							= NULL;
 
 	// Attributes
 	run 								= 1;
@@ -30,13 +30,34 @@ CBebopInterface::~CBebopInterface()
 	ARNETWORKAL_Manager_Delete( &m_pNetworkALManager );
 }
 
-void CBebopInterface::Initialize()
+bool CBebopInterface::Initialize()
 {
+	LOG( INFO ) << "Initializing Bebop Interface...";
+
+	// Perform network discovery
+	if( !PerformNetworkDiscovery() )
+	{
+		return false;
+	}
+
+	// Start network connection with drone
+	if( !InitializeNetworkManager() )
+	{
+		return false;
+	}
+
+	// Start network connection with drone
+	if( !StartNetworkThreads() )
+	{
+		return false;
+	}
+
+	return true;
 }
 
 
 // Returns true if successful, false if failure
-bool CBebopInterface::NetworkDiscoveryConnection()
+bool CBebopInterface::PerformNetworkDiscovery()
 {
 	LOG( INFO ) << "Performing network discovery...";
 
@@ -82,7 +103,7 @@ bool CBebopInterface::NetworkDiscoveryConnection()
 	}
 }
 
-bool CBebopInterface::StartNetwork()
+bool CBebopInterface::InitializeNetworkManager()
 {
 	eARNETWORK_ERROR netError 		= ARNETWORK_OK;
 	eARNETWORKAL_ERROR netAlError 	= ARNETWORKAL_OK;
@@ -102,6 +123,7 @@ bool CBebopInterface::StartNetwork()
 
 	// Initialize the ARNetworkALManager
 	netAlError = ARNETWORKAL_Manager_InitWifiNetwork( m_pNetworkALManager, m_networkSettings.TARGET_IP_ADDRESS, m_networkSettings.m_outboundPort, m_networkSettings.m_inboundPort, timeoutSecs );
+
 	if( netAlError != ARNETWORKAL_OK )
 	{
 		LOG( ERROR ) << "Failed to initialize Network Abstraction Layer Manager.";
@@ -124,36 +146,6 @@ bool CBebopInterface::StartNetwork()
 		LOG( ERROR ) << "Failed to create Network Manager.";
 		return false;
 	}
-
-//	if (!failed)
-//	{
-//		// Create and start Tx and Rx threads.
-//		if (ARSAL_Thread_Create(&(deviceManager->rxThread), ARNETWORK_Manager_ReceivingThreadRun, deviceManager->netManager) != 0)
-//		{
-//			ARSAL_PRINT(ARSAL_PRINT_ERROR, TAG, "Creation of Rx thread failed.");
-//			failed = 1;
-//		}
-//
-//		if (ARSAL_Thread_Create(&(deviceManager->txThread), ARNETWORK_Manager_SendingThreadRun, deviceManager->netManager) != 0)
-//		{
-//			ARSAL_PRINT(ARSAL_PRINT_ERROR, TAG, "Creation of Tx thread failed.");
-//			failed = 1;
-//		}
-//	}
-//
-//	// Print net error
-//	if (failed)
-//	{
-//		if (netAlError != ARNETWORKAL_OK)
-//		{
-//			ARSAL_PRINT(ARSAL_PRINT_ERROR, TAG, "ARNetWorkAL Error : %s", ARNETWORKAL_Error_ToString(netAlError));
-//		}
-//
-//		if (netError != ARNETWORK_OK)
-//		{
-//			ARSAL_PRINT(ARSAL_PRINT_ERROR, TAG, "ARNetWork Error : %s", ARNETWORK_Error_ToString(netError));
-//		}
-//	}
 
 	return true;
 }
@@ -198,6 +190,27 @@ eARDISCOVERY_ERROR CBebopInterface::SendJsonCallback( uint8_t *txDataIn, uint32_
 
 void CBebopInterface::OnDisconnect( ARNETWORK_Manager_t* networkManagerIn, ARNETWORKAL_Manager_t* networkALManagerIn, void* customDataIn )
 {
+}
+
+bool bebop::CBebopInterface::StartNetworkThreads()
+{
+	// Create and start Rx Thread
+	if( ARSAL_Thread_Create( &( m_tRxThread ), ARNETWORK_Manager_ReceivingThreadRun, m_pNetworkManager ) != 0 )
+	{
+		LOG( ERROR ) << "Creation of Rx thread failed.";
+		return false;
+	}
+
+	// Create and start Tx Thread
+	if( ARSAL_Thread_Create( &( m_tRxThread ), ARNETWORK_Manager_SendingThreadRun, m_pNetworkManager ) != 0 )
+	{
+		LOG( ERROR ) << "Creation of Tx thread failed.";
+		return false;
+
+		// TODO: Do I need to clean up the rx thread here before returning from failure?
+	}
+
+	return true;
 }
 
 eARDISCOVERY_ERROR CBebopInterface::ReceiveJsonCallback( uint8_t *rxDataIn, uint32_t rxDataSizeIn, char *ipIn, void *customDataIn )

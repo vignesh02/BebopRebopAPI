@@ -11,5 +11,16 @@ using namespace bebop;
 int main()
 {
 	CBebopInterface bebopInterface;
+
+	// Initialize the interface - Connects to the drone and sets up everything necessary for communications
+	if( !bebopInterface.Initialize() )
+	{
+		return 0;
+	}
+
+	// You're connected and ready to fly!
+
+	// Do stuff here
+
 	return 0;
 }
