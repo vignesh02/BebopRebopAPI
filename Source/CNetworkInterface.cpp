@@ -13,6 +13,11 @@ CNetworkInterface::CNetworkInterface()
 	m_pNetworkManager			= nullptr;
 	m_tRxThread					= nullptr;
 	m_tTxThread					= nullptr;
+	m_tMonitorThread			= nullptr;
+
+	// Init attributes
+	m_killMonitor				= false;
+	m_isConnected				= false;
 }
 
 CNetworkInterface::~CNetworkInterface()
@@ -26,23 +31,38 @@ bool CNetworkInterface::Initialize()
 	// Perform network discovery
 	if( !PerformNetworkDiscovery() )
 	{
+		m_isConnected = false;
 		return false;
 	}
 
 	// Start network connection with drone
 	if( !InitializeNetworkManagers() )
 	{
+		m_isConnected = false;
 		return false;
 	}
 
 	// Start network connection with drone
 	if( !StartNetworkThreads() )
 	{
+		m_isConnected = false;
 		return false;
 	}
 
 	LOG( INFO ) << "AR Network Interface successfully initialized.";
 
+	// Next, if we have a user registered callback, call that
+	if( m_pConnectionCallback != nullptr )
+	{
+		LOG( INFO ) << "Activating connection callback.";
+		m_pConnectionCallback();
+	}
+	else
+	{
+		// LOG( WARNING ) << "No connection callback registered!";
+	}
+
+	m_isConnected = true;
 	return true;
 }
 
@@ -167,6 +187,11 @@ void CNetworkInterface::OnDisconnect( ARNETWORK_Manager_t* networkManagerIn, ARN
 
 	LOG( INFO ) << "Disconnected from the target!";
 
+	// First and foremost, set our connection status to false and wake up the monitor thread to try to reconnect
+	m_isConnected = false;
+	// TODO: condition variable wakeup for monitor thread
+
+	// Next, if we have a user registered callback, call that!
 	if( networkInterface->m_pDisconnectionCallback != nullptr )
 	{
 		LOG( INFO ) << "Activating disconnection callback.";
@@ -197,6 +222,17 @@ bool rebop::CNetworkInterface::StartNetworkThreads()
 	}
 
 	LOG( INFO ) << "Tx and Rx Threads started!";
+
+	LOG( INFO ) << "Starting Monitor Thread...";
+
+	// Create and start Tx Thread
+	if( ARSAL_Thread_Create( &( m_tMonitorThread ), MonitorThreadFunction, this ) != 0 )
+	{
+		LOG( ERROR ) << "Creation of Monitor thread failed.";
+		return false;
+	}
+
+	LOG( INFO ) << "Monitor Thread started!";
 
 	return true;
 }
@@ -530,4 +566,44 @@ eARNETWORK_MANAGER_CALLBACK_RETURN CNetworkInterface::DefaultCommandCallback( in
     }
 
     return retval;
+}
+
+void* CNetworkInterface::MonitorThreadFunction( void* dataIn )
+{
+	// Cast to get the network interface
+	CNetworkInterface *networkInterface = (CNetworkInterface*)dataIn;
+
+	if( networkInterface == nullptr )
+	{
+		LOG( ERROR ) << "Invalid pointer given to Network Monitor thread. Monitor not activated.";
+		return nullptr;
+	}
+
+	while( m_killMonitor == false )
+	{
+		// TODO: Replace this with a condition variable so it just sleeps until alerted
+		// TODO: Make sure things are threadsafe after finishing rapid prototyping
+
+		// Check to see if we've disconnected
+		if( m_isConnected == false )
+		{
+			while( m_isConnected == false )
+			{
+				// Stop network and do cleanup
+				networkInterface->StopNetwork();
+
+				// Reinitialize network and attempt to connect again
+				networkInterface->Initialize();
+
+				// Sleep for some kind of delay between attempts (default 5s)
+				sleep( m_kMonitorRetryDelay );
+			}
+
+			// Go back to sleep
+		}
+
+		// Should be asleep, go back to sleep if we somehow spuriously woke up
+	}
+
+	return nullptr;
 }

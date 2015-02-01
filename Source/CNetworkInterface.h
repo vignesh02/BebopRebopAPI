@@ -35,18 +35,23 @@ public:
 	ARNETWORK_Manager_t 		*m_pNetworkManager;
 
 	TCommandCallback			m_pDefaultCommandCallback;
-
 	TConnectionCallback			m_pConnectionCallback;
 	TDisconnectionCallback		m_pDisconnectionCallback;
 
 	// Threads
 	ARSAL_Thread_t 				m_tRxThread;
 	ARSAL_Thread_t 				m_tTxThread;
+	ARSAL_Thread_t				m_tMonitorThread;
 
 	std::vector<ARSAL_Thread_t>	m_tRxThreads;
 
 	// Attributes
 	CNetworkSettings m_networkSettings;
+
+	bool m_killMonitor;
+	bool m_isConnected;
+
+	const uint32_t m_kMonitorRetryDelay = 5;
 
 	// Constants
 	const int m_kMaxBytesToRead = 131072;		// 128kb - arbitrary
@@ -86,6 +91,9 @@ public:
 	static void OnDisconnect( ARNETWORK_Manager_t *networkManagerIn, ARNETWORKAL_Manager_t *networkALManagerIn, void *customDataIn );
 	static eARDISCOVERY_ERROR SendJsonCallback( uint8_t *txDataIn, uint32_t *txDataSizeIn, void *customDataIn );
 	static eARDISCOVERY_ERROR ReceiveJsonCallback( uint8_t *dataRxIn, uint32_t dataRxSizeIn, char *ipIn, void *customDataIn );
+
+	// Monitor thread function
+	static void* MonitorThreadFunction( void* dataIn );
 };
 
 }
