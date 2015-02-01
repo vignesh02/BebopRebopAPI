@@ -68,9 +68,9 @@ namespace rebop
 			// Nav commands
 			namespace navigation
 			{
-				struct TPose
+				struct TPilotCommand
 				{
-					int8_t flag;		// Boolean flag to activate roll/pitch movement
+					uint8_t flag;		// Boolean flag to activate roll/pitch movement
 					int8_t roll;		// Roll consign for the drone 								[-100:100] Normalized
 					int8_t pitch;		// Pitch consign for the drone 								[-100:100] Normalized
 					int8_t yaw;			// Yaw rate consign for the drone 							[-100:100] Normalized

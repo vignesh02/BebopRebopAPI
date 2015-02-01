@@ -24,12 +24,15 @@ bool CBebopInterface::Takeoff()
 {
 	CCommandPacket packet( 128 );
 
-	// Generate takeoff command
-	eARCOMMANDS_GENERATOR_ERROR cmdError = ARCOMMANDS_Generator_GenerateARDrone3PilotingTakeOff( packet.m_pData, packet.m_bufferSize, &packet.m_dataSize );
+	// Generate command
+	eARCOMMANDS_GENERATOR_ERROR cmdError = ARCOMMANDS_Generator_GenerateARDrone3PilotingTakeOff(
+			packet.m_pData,
+			packet.m_bufferSize,
+			&packet.m_dataSize );
 
 	if( cmdError == ARCOMMANDS_GENERATOR_OK )
 	{
-		// Takeoff should be sent and acknowledged
+		// Command should be acknowledged
 		if( !m_networkInterface.SendData( packet, EOutboundBufferId::OUTBOUND_WITH_ACK, true ) )
 		{
 			LOG( ERROR ) << "Failed to send takeoff command.";
@@ -38,70 +41,449 @@ bool CBebopInterface::Takeoff()
 	}
 	else
 	{
-		LOG( ERROR ) << "Failed to generate takeoff command.";
+		LOG( ERROR ) << "Failed to generate takeoff command. Err: " << cmdError;
 		return false;
 	}
 
 	return true;
 }
 
-void CBebopInterface::Land()
+bool CBebopInterface::Land()
 {
+	CCommandPacket packet( 128 );
+
+	// Generate command
+	eARCOMMANDS_GENERATOR_ERROR cmdError = ARCOMMANDS_Generator_GenerateARDrone3PilotingLanding(
+			packet.m_pData,
+			packet.m_bufferSize,
+			&packet.m_dataSize );
+
+	if( cmdError == ARCOMMANDS_GENERATOR_OK )
+	{
+		// Command should be acknowledged
+		if( !m_networkInterface.SendData( packet, EOutboundBufferId::OUTBOUND_WITH_ACK, true ) )
+		{
+			LOG( ERROR ) << "Failed to send landing command.";
+			return false;
+		}
+	}
+	else
+	{
+		LOG( ERROR ) << "Failed to generate landing command. Err: " << cmdError;
+		return false;
+	}
+
+	return true;
 }
 
-void CBebopInterface::Emergency()
+bool CBebopInterface::Emergency()
 {
+	CCommandPacket packet( 128 );
+
+	// Generate command
+	eARCOMMANDS_GENERATOR_ERROR cmdError = ARCOMMANDS_Generator_GenerateARDrone3PilotingEmergency(
+			packet.m_pData,
+			packet.m_bufferSize,
+			&packet.m_dataSize );
+
+	if( cmdError == ARCOMMANDS_GENERATOR_OK )
+	{
+		// Command should be acknowledged
+		if( !m_networkInterface.SendData( packet, EOutboundBufferId::OUTBOUND_WITH_ACK, true ) )
+		{
+			LOG( ERROR ) << "Failed to send emergency command.";
+			return false;
+		}
+	}
+	else
+	{
+		LOG( ERROR ) << "Failed to generate emergency command. Err: " << cmdError;
+		return false;
+	}
+
+	return true;
 }
 
-void CBebopInterface::NavigateHome( ENavigateHome startOrStopIn )
+bool CBebopInterface::NavigateHome( ENavigateHome startOrStopIn )
 {
+	CCommandPacket packet( 128 );
+
+	// Generate command
+	eARCOMMANDS_GENERATOR_ERROR cmdError = ARCOMMANDS_Generator_GenerateARDrone3PilotingNavigateHome(
+			packet.m_pData,
+			packet.m_bufferSize,
+			&packet.m_dataSize,
+			(uint8_t)startOrStopIn );
+
+	if( cmdError == ARCOMMANDS_GENERATOR_OK )
+	{
+		// Command should be acknowledged
+		if( !m_networkInterface.SendData( packet, EOutboundBufferId::OUTBOUND_WITH_ACK, true ) )
+		{
+			LOG( ERROR ) << "Failed to send NavigateHome command.";
+			return false;
+		}
+	}
+	else
+	{
+		LOG( ERROR ) << "Failed to generate NavigateHome command. Err: " << cmdError;
+		return false;
+	}
+
+	return true;
 }
 
-void CBebopInterface::SetPose( const TPose& poseIn )
+bool CBebopInterface::SendPilotCommand( const TPilotCommand& commandIn )
 {
+	CCommandPacket packet( 128 );
+
+	// Generate command
+	eARCOMMANDS_GENERATOR_ERROR cmdError = ARCOMMANDS_Generator_GenerateARDrone3PilotingPCMD(
+			packet.m_pData,
+			packet.m_bufferSize,
+			&packet.m_dataSize,
+			commandIn.flag,
+			commandIn.roll,
+			commandIn.pitch,
+			commandIn.yaw,
+			commandIn.gaz,
+			commandIn.psi );
+
+	if( cmdError == ARCOMMANDS_GENERATOR_OK )
+	{
+		// Command should not be acknowledged
+		if( !m_networkInterface.SendData( packet, EOutboundBufferId::OUTBOUND, true ) )
+		{
+			LOG( ERROR ) << "Failed to send Pilot Command.";
+			return false;
+		}
+	}
+	else
+	{
+		LOG( ERROR ) << "Failed to generate Pilot Command. Err: " << cmdError;
+		return false;
+	}
+
+	return true;
 }
 
-void CBebopInterface::SetAutoTakeoffMode( EAutoTakeoffMode modeIn )
+bool CBebopInterface::SetAutoTakeoffMode( EAutoTakeoffMode modeIn )
 {
+	CCommandPacket packet( 128 );
+
+	// Generate command
+	eARCOMMANDS_GENERATOR_ERROR cmdError = ARCOMMANDS_Generator_GenerateARDrone3PilotingAutoTakeOffMode(
+			packet.m_pData,
+			packet.m_bufferSize,
+			&packet.m_dataSize,
+			(uint8_t)modeIn );
+
+	if( cmdError == ARCOMMANDS_GENERATOR_OK )
+	{
+		// Command should be acknowledged
+		if( !m_networkInterface.SendData( packet, EOutboundBufferId::OUTBOUND_WITH_ACK, true ) )
+		{
+			LOG( ERROR ) << "Failed to send AutoTakeoffMode command.";
+			return false;
+		}
+	}
+	else
+	{
+		LOG( ERROR ) << "Failed to generate AutoTakeoffMode command. Err: " << cmdError;
+		return false;
+	}
+
+	return true;
 }
 
-void CBebopInterface::Flip( EFlipDirection directionIn )
+bool CBebopInterface::Flip( EFlipDirection directionIn )
 {
+	CCommandPacket packet( 128 );
+
+	// Generate command
+	eARCOMMANDS_GENERATOR_ERROR cmdError = ARCOMMANDS_Generator_GenerateARDrone3AnimationsFlip(
+			packet.m_pData,
+			packet.m_bufferSize,
+			&packet.m_dataSize,
+			(eARCOMMANDS_ARDRONE3_ANIMATIONS_FLIP_DIRECTION)directionIn );
+
+	if( cmdError == ARCOMMANDS_GENERATOR_OK )
+	{
+		// Command should be acknowledged
+		if( !m_networkInterface.SendData( packet, EOutboundBufferId::OUTBOUND_WITH_ACK, true ) )
+		{
+			LOG( ERROR ) << "Failed to send Flip command.";
+			return false;
+		}
+	}
+	else
+	{
+		LOG( ERROR ) << "Failed to generate Flip command. Err: " << cmdError;
+		return false;
+	}
+
+	return true;
 }
 
-void CBebopInterface::SetMaxAltitude( float maxAltitudeMetersIn )
+bool CBebopInterface::SetMaxAltitude( float maxAltitudeMetersIn )
 {
+	CCommandPacket packet( 128 );
+
+	// Generate command
+	eARCOMMANDS_GENERATOR_ERROR cmdError = ARCOMMANDS_Generator_GenerateARDrone3PilotingSettingsMaxAltitude(
+			packet.m_pData,
+			packet.m_bufferSize,
+			&packet.m_dataSize,
+			maxAltitudeMetersIn );
+
+	if( cmdError == ARCOMMANDS_GENERATOR_OK )
+	{
+		// Command should be acknowledged
+		if( !m_networkInterface.SendData( packet, EOutboundBufferId::OUTBOUND_WITH_ACK, true ) )
+		{
+			LOG( ERROR ) << "Failed to send AutoTakeoffMode command.";
+			return false;
+		}
+	}
+	else
+	{
+		LOG( ERROR ) << "Failed to generate AutoTakeoffMode command. Err: " << cmdError;
+		return false;
+	}
+
+	return true;
 }
 
-void CBebopInterface::SetMaxTilt( float maxTiltDegreesIn )
+bool CBebopInterface::SetMaxTilt( float maxTiltDegreesIn )
 {
+	CCommandPacket packet( 128 );
+
+	// Generate command
+	eARCOMMANDS_GENERATOR_ERROR cmdError = ARCOMMANDS_Generator_GenerateARDrone3PilotingSettingsMaxTilt(
+			packet.m_pData,
+			packet.m_bufferSize,
+			&packet.m_dataSize,
+			maxTiltDegreesIn );
+
+	if( cmdError == ARCOMMANDS_GENERATOR_OK )
+	{
+		// Command should be acknowledged
+		if( !m_networkInterface.SendData( packet, EOutboundBufferId::OUTBOUND_WITH_ACK, true ) )
+		{
+			LOG( ERROR ) << "Failed to send SetMaxTilt command.";
+			return false;
+		}
+	}
+	else
+	{
+		LOG( ERROR ) << "Failed to generate SetMaxTilt command. Err: " << cmdError;
+		return false;
+	}
+
+	return true;
 }
 
-void CBebopInterface::SetMaxVerticalSpeed( float maxVerticalSpeedMetersPerSecIn )
+bool CBebopInterface::SetMaxVerticalSpeed( float maxVerticalSpeedMetersPerSecIn )
 {
+	CCommandPacket packet( 128 );
+
+	// Generate command
+	eARCOMMANDS_GENERATOR_ERROR cmdError = ARCOMMANDS_Generator_GenerateARDrone3SpeedSettingsMaxVerticalSpeed(
+			packet.m_pData,
+			packet.m_bufferSize,
+			&packet.m_dataSize,
+			maxVerticalSpeedMetersPerSecIn );
+
+	if( cmdError == ARCOMMANDS_GENERATOR_OK )
+	{
+		// Command should be acknowledged
+		if( !m_networkInterface.SendData( packet, EOutboundBufferId::OUTBOUND_WITH_ACK, true ) )
+		{
+			LOG( ERROR ) << "Failed to send SetMaxVerticalSpeed command.";
+			return false;
+		}
+	}
+	else
+	{
+		LOG( ERROR ) << "Failed to generate SetMaxVerticalSpeed command. Err: " << cmdError;
+		return false;
+	}
+
+	return true;
 }
 
-void CBebopInterface::SetMaxRotationSpeed( float maxRotationSpeedDegPerSecIn )
+bool CBebopInterface::SetMaxRotationSpeed( float maxRotationSpeedDegPerSecIn )
 {
+	CCommandPacket packet( 128 );
+
+	// Generate command
+	eARCOMMANDS_GENERATOR_ERROR cmdError = ARCOMMANDS_Generator_GenerateARDrone3SpeedSettingsMaxRotationSpeed(
+			packet.m_pData,
+			packet.m_bufferSize,
+			&packet.m_dataSize,
+			maxRotationSpeedDegPerSecIn );
+
+	if( cmdError == ARCOMMANDS_GENERATOR_OK )
+	{
+		// Command should be acknowledged
+		if( !m_networkInterface.SendData( packet, EOutboundBufferId::OUTBOUND_WITH_ACK, true ) )
+		{
+			LOG( ERROR ) << "Failed to send SetMaxRotationSpeed command.";
+			return false;
+		}
+	}
+	else
+	{
+		LOG( ERROR ) << "Failed to generate SetMaxRotationSpeed command. Err: " << cmdError;
+		return false;
+	}
+
+	return true;
 }
 
-void CBebopInterface::SetAbsoluteControlMode( EAbsoluteControlMode modeIn )
+bool CBebopInterface::SetAbsoluteControlMode( EAbsoluteControlMode modeIn )
 {
+	CCommandPacket packet( 128 );
+
+	// Generate command
+	eARCOMMANDS_GENERATOR_ERROR cmdError = ARCOMMANDS_Generator_GenerateARDrone3PilotingSettingsAbsolutControl(
+			packet.m_pData,
+			packet.m_bufferSize,
+			&packet.m_dataSize,
+			(uint8_t)modeIn );
+
+	if( cmdError == ARCOMMANDS_GENERATOR_OK )
+	{
+		// Command should be acknowledged
+		if( !m_networkInterface.SendData( packet, EOutboundBufferId::OUTBOUND_WITH_ACK, true ) )
+		{
+			LOG( ERROR ) << "Failed to send SetAbsoluteControlMode command.";
+			return false;
+		}
+	}
+	else
+	{
+		LOG( ERROR ) << "Failed to generate SetAbsoluteControlMode command. Err: " << cmdError;
+		return false;
+	}
+
+	return true;
 }
 
-void CBebopInterface::SetHullProtectionPresence( EHullPresence presenceIn )
+bool CBebopInterface::SetHullProtectionPresence( EHullPresence presenceIn )
 {
+	CCommandPacket packet( 128 );
+
+	// Generate command
+	eARCOMMANDS_GENERATOR_ERROR cmdError = ARCOMMANDS_Generator_GenerateARDrone3SpeedSettingsHullProtection(
+			packet.m_pData,
+			packet.m_bufferSize,
+			&packet.m_dataSize,
+			(uint8_t)presenceIn );
+
+	if( cmdError == ARCOMMANDS_GENERATOR_OK )
+	{
+		// Command should be acknowledged
+		if( !m_networkInterface.SendData( packet, EOutboundBufferId::OUTBOUND_WITH_ACK, true ) )
+		{
+			LOG( ERROR ) << "Failed to send SetHullProtectionPresence command.";
+			return false;
+		}
+	}
+	else
+	{
+		LOG( ERROR ) << "Failed to generate SetHullProtectionPresence command. Err: " << cmdError;
+		return false;
+	}
+
+	return true;
 }
 
-void CBebopInterface::SetOutdoorMode( EOutdoorMode modeIn )
+bool CBebopInterface::SetOutdoorMode( EOutdoorMode modeIn )
 {
+	CCommandPacket packet( 128 );
+
+	// Generate command
+	eARCOMMANDS_GENERATOR_ERROR cmdError = ARCOMMANDS_Generator_GenerateARDrone3SpeedSettingsOutdoor(
+			packet.m_pData,
+			packet.m_bufferSize,
+			&packet.m_dataSize,
+			(uint8_t)modeIn );
+
+	if( cmdError == ARCOMMANDS_GENERATOR_OK )
+	{
+		// Command should be acknowledged
+		if( !m_networkInterface.SendData( packet, EOutboundBufferId::OUTBOUND_WITH_ACK, true ) )
+		{
+			LOG( ERROR ) << "Failed to send SetOutdoorMode command.";
+			return false;
+		}
+	}
+	else
+	{
+		LOG( ERROR ) << "Failed to generate SetOutdoorMode command. Err: " << cmdError;
+		return false;
+	}
+
+	return true;
 }
 
-void CBebopInterface::SetGpsHomeLocation( const TGpsHomeLocation& locationIn )
+bool CBebopInterface::SetGpsHomeLocation( const TGpsHomeLocation& locationIn )
 {
+	CCommandPacket packet( 128 );
+
+	// Generate command
+	eARCOMMANDS_GENERATOR_ERROR cmdError = ARCOMMANDS_Generator_GenerateARDrone3GPSSettingsSetHome(
+			packet.m_pData,
+			packet.m_bufferSize,
+			&packet.m_dataSize,
+			locationIn.latitude,
+			locationIn.longitude,
+			locationIn.altitude );
+
+	if( cmdError == ARCOMMANDS_GENERATOR_OK )
+	{
+		// Command should be acknowledged
+		if( !m_networkInterface.SendData( packet, EOutboundBufferId::OUTBOUND_WITH_ACK, true ) )
+		{
+			LOG( ERROR ) << "Failed to send SetGpsHomeLocation command.";
+			return false;
+		}
+	}
+	else
+	{
+		LOG( ERROR ) << "Failed to generate SetGpsHomeLocation command. Err: " << cmdError;
+		return false;
+	}
+
+	return true;
 }
 
 
-void CBebopInterface::ResetGpsHome()
+bool CBebopInterface::ResetGpsHome()
 {
+	CCommandPacket packet( 128 );
+
+	// Generate command
+	eARCOMMANDS_GENERATOR_ERROR cmdError = ARCOMMANDS_Generator_GenerateARDrone3GPSSettingsResetHome(
+			packet.m_pData,
+			packet.m_bufferSize,
+			&packet.m_dataSize );
+
+	if( cmdError == ARCOMMANDS_GENERATOR_OK )
+	{
+		// Command should be acknowledged
+		if( !m_networkInterface.SendData( packet, EOutboundBufferId::OUTBOUND_WITH_ACK, true ) )
+		{
+			LOG( ERROR ) << "Failed to send ResetGpsHome command.";
+			return false;
+		}
+	}
+	else
+	{
+		LOG( ERROR ) << "Failed to generate ResetGpsHome command. Err: " << cmdError;
+		return false;
+	}
+
+	return true;
 }
