@@ -1,4 +1,4 @@
-"Nothing gets the taste of shame and humiliation out of your mouth like [BebopRebopAPI]" 
+"Nothing gets the taste of shame and humiliation out of your mouth like a piece of [BebopRebopAPI]" 
  
  \-Garrison Keillor
 
