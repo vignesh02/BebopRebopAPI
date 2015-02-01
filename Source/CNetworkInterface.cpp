@@ -303,7 +303,7 @@ bool CNetworkInterface::SendData( const CDataPacket& dataIn, EOutboundBufferId o
 
 	// Send packet to vehicle
 	eARNETWORK_ERROR ret = ARNETWORK_Manager_SendData( 	m_pNetworkManager,
-														outboundBufferIdIn,
+														(int)outboundBufferIdIn,
 														dataIn.m_pData,
 														dataIn.m_size,
 														nullptr,
@@ -322,7 +322,7 @@ bool CNetworkInterface::ReadData( CDataPacket& dataOut, EInboundBufferId inbound
 {
 	// Read packet from vehicle (indefinite blocking)
 	eARNETWORK_ERROR ret = ARNETWORK_Manager_ReadData(	m_pNetworkManager,
-														inboundBufferIdIn,
+														(int)inboundBufferIdIn,
 														dataOut.m_pData,
 														m_kMaxBytesToRead,
 														&dataOut.m_size );
@@ -339,7 +339,7 @@ bool CNetworkInterface::TryReadData( CDataPacket& dataOut, EInboundBufferId inbo
 {
 	// Read packet from vehicle (non-blocking)
 	eARNETWORK_ERROR ret = ARNETWORK_Manager_TryReadData(	m_pNetworkManager,
-															inboundBufferIdIn,
+															(int)inboundBufferIdIn,
 															dataOut.m_pData,
 															m_kMaxBytesToRead,
 															&dataOut.m_size );
@@ -356,7 +356,7 @@ bool CNetworkInterface::ReadDataWithTimeout( CDataPacket& dataOut, EInboundBuffe
 {
 	// Read packet from vehicle (block for timeout duration)
 	eARNETWORK_ERROR ret = ARNETWORK_Manager_ReadDataWithTimeout(	m_pNetworkManager,
-																	inboundBufferIdIn,
+																	(int)inboundBufferIdIn,
 																	dataOut.m_pData,
 																	m_kMaxBytesToRead,
 																	&dataOut.m_size,
@@ -372,7 +372,7 @@ bool CNetworkInterface::ReadDataWithTimeout( CDataPacket& dataOut, EInboundBuffe
 
 bool CNetworkInterface::FlushInboundBuffer( EInboundBufferId inboundBufferIdIn )
 {
-	eARNETWORK_ERROR ret = ARNETWORK_Manager_FlushInputBuffer( m_pNetworkManager, inboundBufferIdIn );
+	eARNETWORK_ERROR ret = ARNETWORK_Manager_FlushInputBuffer( m_pNetworkManager, (int)inboundBufferIdIn );
 
 	if( ret != eARNETWORK_ERROR::ARNETWORK_OK )
 	{
@@ -387,7 +387,7 @@ bool CNetworkInterface::FlushOutboundBuffer( EOutboundBufferId outboundBufferIdI
 	// WARNING: Parrot's documentation about what is an input buffer/output buffer is confusing and inconsistent.
 	// Logically, you would expect the output buffer to be the buffer that you are writing commands to, but their documentation contradicts this
 	// in one place, and then contradicts itself for the GetLatency function. ALl this to say, FlushInput/Output may need swapping. \/(o.o)\/
-	eARNETWORK_ERROR ret = ARNETWORK_Manager_FlushOutputBuffer( m_pNetworkManager, outboundBufferIdIn );
+	eARNETWORK_ERROR ret = ARNETWORK_Manager_FlushOutputBuffer( m_pNetworkManager, (int)outboundBufferIdIn );
 
 	if( ret != eARNETWORK_ERROR::ARNETWORK_OK )
 	{
@@ -422,7 +422,7 @@ int CNetworkInterface::GetEstimatedMissPercentage( EOutboundBufferId outboundBuf
 {
 	// Get the estimated percent of packets being dropped
 	// Negative value is an error
-	return ARNETWORK_Manager_GetEstimatedMissPercentage( m_pNetworkManager, outboundBufferIdIn );
+	return ARNETWORK_Manager_GetEstimatedMissPercentage( m_pNetworkManager, (int)outboundBufferIdIn );
 }
 
 eARDISCOVERY_ERROR CNetworkInterface::ReceiveJsonCallback( uint8_t *rxDataIn, uint32_t rxDataSizeIn, char *ipIn, void *customDataIn )

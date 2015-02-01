@@ -5,7 +5,7 @@ namespace rebop
 {
 	namespace bebop
 	{
-		enum ENavCommands
+		enum class ENavCommands
 		{
 			FlatTrim,
 			Takeoff,
@@ -26,7 +26,7 @@ namespace rebop
 			ResetGpsHome
 		};
 
-		enum EMediaCommands
+		enum class EMediaCommands
 		{
 			RecordPicture,
 			RecordVideo,
@@ -40,14 +40,14 @@ namespace rebop
 			SetVideoAutorecordSelection
 		};
 
-		enum ENetworkCommands
+		enum class ENetworkCommands
 		{
 			LaunchWifiScan,
 			InquireAuthChannels,
 			SetWifiSelection
 		};
 
-		enum EDebugCommands
+		enum class EDebugCommands
 		{
 			VideoEnableWobbleCancellation,
 			VideoSyncAngleGyros,
@@ -65,47 +65,63 @@ namespace rebop
 	{
 		namespace bebop
 		{
-			// Pilotting commands
-			namespace pilot
+			// Nav commands
+			namespace navigation
 			{
 				struct TPose
 				{
 					int8_t flag;		// Boolean flag to activate roll/pitch movement
-					int8_t roll;		// Roll consign for the drone 								[-100:100]
-					int8_t pitch;		// Pitch consign for the drone 								[-100:100]
-					int8_t yaw;			// Yaw rate consign for the drone 							[-100:100]
-					int8_t gaz;			// Altitude rate consign for the drone 						[-100:100]
-					int8_t psi;			// Magnetic north heading of the controlling device (deg) 	[-180:180]
+					int8_t roll;		// Roll consign for the drone 								[-100:100] Normalized
+					int8_t pitch;		// Pitch consign for the drone 								[-100:100] Normalized
+					int8_t yaw;			// Yaw rate consign for the drone 							[-100:100] Normalized
+					int8_t gaz;			// Altitude rate consign for the drone 						[-100:100] Normalized
+					int8_t psi;			// Magnetic north heading of the controlling device (deg) 	[-180:180] Degrees
 				};
 
-				struct TNavigateHome
+				struct TGpsHomeLocation
 				{
-					uint8_t start;		// 1 - Start navigating home.  0 - Stop navigating home.
+					double latitude;	// Decimal degrees
+					double longitude;	// Decimal degrees
+					double altitude;	// Meters
 				};
 
-				struct TAutoTakeoffMode
+				enum class ENavigateHome
 				{
-					uint8_t state;		// 1 - Auto takeoff enabled.  0 - Auto takeoff disabled (?)
+					STOP 	= 0,
+					START 	= 1
 				};
 
-
-			}
-
-			// Animation commands
-			namespace animation
-			{
-				struct TFlip
+				enum class EAutoTakeoffMode
 				{
-					enum EDirection
-					{
-						FRONT = eARCOMMANDS_ARDRONE3_ANIMATIONS_FLIP_DIRECTION::ARCOMMANDS_ARDRONE3_ANIMATIONS_FLIP_DIRECTION_FRONT,
-						BACK = eARCOMMANDS_ARDRONE3_ANIMATIONS_FLIP_DIRECTION::ARCOMMANDS_ARDRONE3_ANIMATIONS_FLIP_DIRECTION_BACK,
-						RIGHT = eARCOMMANDS_ARDRONE3_ANIMATIONS_FLIP_DIRECTION::ARCOMMANDS_ARDRONE3_ANIMATIONS_FLIP_DIRECTION_RIGHT,
-						LEFT = eARCOMMANDS_ARDRONE3_ANIMATIONS_FLIP_DIRECTION::ARCOMMANDS_ARDRONE3_ANIMATIONS_FLIP_DIRECTION_LEFT,
-						MAX = eARCOMMANDS_ARDRONE3_ANIMATIONS_FLIP_DIRECTION::ARCOMMANDS_ARDRONE3_ANIMATIONS_FLIP_DIRECTION_MAX
-					};
+					DISABLED 	= 0,
+					ENABLED 	= 1
+				};
 
-					EDirection direction;
+				enum class EFlipDirection
+				{
+					FRONT = eARCOMMANDS_ARDRONE3_ANIMATIONS_FLIP_DIRECTION::ARCOMMANDS_ARDRONE3_ANIMATIONS_FLIP_DIRECTION_FRONT,
+					BACK = eARCOMMANDS_ARDRONE3_ANIMATIONS_FLIP_DIRECTION::ARCOMMANDS_ARDRONE3_ANIMATIONS_FLIP_DIRECTION_BACK,
+					RIGHT = eARCOMMANDS_ARDRONE3_ANIMATIONS_FLIP_DIRECTION::ARCOMMANDS_ARDRONE3_ANIMATIONS_FLIP_DIRECTION_RIGHT,
+					LEFT = eARCOMMANDS_ARDRONE3_ANIMATIONS_FLIP_DIRECTION::ARCOMMANDS_ARDRONE3_ANIMATIONS_FLIP_DIRECTION_LEFT,
+					MAX = eARCOMMANDS_ARDRONE3_ANIMATIONS_FLIP_DIRECTION::ARCOMMANDS_ARDRONE3_ANIMATIONS_FLIP_DIRECTION_MAX
+				};
+
+				enum class EAbsoluteControlMode
+				{
+					DISABLED 	= 0,
+					ENABLED 	= 1
+				};
+
+				enum class EHullPresence
+				{
+					NOT_PRESENT = 0,
+					PRESENT 	= 1
+				};
+
+				enum class EOutdoorMode
+				{
+					INDOOR		= 0,
+					OUTDOOR		= 1
 				};
 			}
 		}
