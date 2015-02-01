@@ -6,13 +6,14 @@ The official Parrot ArDrone SDK v3 is pretty user unfriendly and poorly document
 
 Current todo-list:
 
-* Thread that monitors network connection to automatically reconnect upon disconnection
-* Reader thread that pulls and parses all incoming data into user buffers for consumption on a per message basis
-* Vehicle specific status manager (latest and greatest of status info parsed in, so users can poll when they want instead of consuming messages)
-* SendWithTimeout (combines send with readwithtimeout to let you do a blocking send in one call, for things like takeoff, land, etc)
-* Finishing adding all of the sendable commands for the Bebop (piloting commands are in, but there is a bunch of media and network stuff to add)
-* Armhf build configuration
-* Probably more, but I don't know what yet
+- [ ] Thread that monitors network connection to automatically reconnect upon disconnection
+- [ ] Reader thread that pulls and parses all incoming data into user buffers for consumption on a per message basis
+- [ ] Vehicle specific status manager (latest and greatest of status info parsed in, so users can poll when they want instead of consuming messages.
+- [ ] SendWithTimeout (combines send with readwithtimeout to let you do a blocking send in one call, for things like takeoff, land, etc)
+- [ ] Finishing adding all of the sendable commands for the Bebop (piloting commands are in, but there is a bunch of media and network stuff to add)
+- [ ] Creating and using custom status/error codes instead of just using bools. Bools are easy to work with to start, but you're going to want to know why things failed, sooner or later.
+- [ ] Armhf build configuration
+- [ ] Probably more, but I don't know what yet
 
 Feel free to make suggestions!
 
