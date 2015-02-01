@@ -1,9 +1,9 @@
 "Nothing gets the taste of shame and humiliation out of your mouth like [BebopRebopAPI]" 
-- Garrison Keillor
+ \-Garrison Keillor
 
 The official Parrot ArDroneSDK3 is pretty user unfriendly and poorly documented, with very little sample code, especially for the Bebop. This library aims to fix that. Stay tuned.
 
-Features in my queue of things-to-add:
+Current todo-list:
 
 * Thread that monitors network connection to automatically reconnect upon disconnection
 * Reader thread that pulls and parses all incoming data into user buffers for consumption on a per message basis
