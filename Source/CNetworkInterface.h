@@ -65,10 +65,10 @@ public:
 
 	// Wrapper functions
 	bool Flush();
-	bool SendData( const CDataPacket &dataIn, EOutboundBufferId outboundBufferIdIn, bool doDataCopyIn );
-	bool ReadData( CDataPacket& dataOut, EInboundBufferId inboundBufferIdIn );
-	bool TryReadData( CDataPacket& dataOut, EInboundBufferId inboundBufferIdIn );
-	bool ReadDataWithTimeout( CDataPacket& dataOut, EInboundBufferId inboundBufferIdIn, uint32_t timeoutMsIn );
+	bool SendData( const CCommandPacket &dataIn, EOutboundBufferId outboundBufferIdIn, bool doDataCopyIn );
+	bool ReadData( CCommandPacket& dataOut, EInboundBufferId inboundBufferIdIn );
+	bool TryReadData( CCommandPacket& dataOut, EInboundBufferId inboundBufferIdIn );
+	bool ReadDataWithTimeout( CCommandPacket& dataOut, EInboundBufferId inboundBufferIdIn, uint32_t timeoutMsIn );
 	bool FlushInboundBuffer( EInboundBufferId inboundBufferIdIn );
 	bool FlushOutboundBuffer( EOutboundBufferId outboundBufferIdIn );
 	bool SetMinimumTimeBetweenSends( uint32_t delayMsIn );

@@ -16,7 +16,9 @@ public:
 	CBebopInterface();
 	virtual ~CBebopInterface();
 
-	void Takeoff();
+	virtual void Update();
+
+	bool Takeoff();
 	void Land();
 	void Emergency();
 	void NavigateHome( ENavigateHome startOrStopIn );

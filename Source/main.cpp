@@ -15,8 +15,18 @@ int main()
 	// Initialize
 	bebop.Initialize();
 
-	// You're connected and ready to run some flight logic!
-	bebop.Update();
+	// Connected and ready to do stuff, theoretically
+	if( bebop.IsConnected() == false )
+	{
+		LOG( ERROR ) << "No connection! Can't do anything!";
+	}
+	else
+	{
+		LOG( ERROR ) << "Ready to do stuff!";
+		bebop.Takeoff();
+		bebop.Land();
+	}
+
 
 	// Cleanup - Kill the network and clean up memory
 	bebop.Cleanup();

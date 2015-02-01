@@ -23,6 +23,7 @@ public:
 	virtual void Initialize();
 	virtual void Update();
 	virtual void Cleanup();
+	virtual bool IsConnected();
 };
 
 }

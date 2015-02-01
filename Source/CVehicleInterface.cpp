@@ -24,19 +24,16 @@ void CVehicleInterface::Initialize()
 
 void CVehicleInterface::Update()
 {
-	// TODO: Create a low frequency thread to manage reconnection behaviour and treat the entire interface as a subsystem
-	if( m_isConnected == false )
-	{
-		LOG( ERROR ) << "No connection! Can't do anything!";
-	}
-	else
-	{
-		LOG( ERROR ) << "Ready to do stuff!";
-	}
+
 }
 
 void CVehicleInterface::Cleanup()
 {
 	// Shutdown the network
 	m_networkInterface.Cleanup();
+}
+
+bool CVehicleInterface::IsConnected()
+{
+	return m_isConnected;
 }

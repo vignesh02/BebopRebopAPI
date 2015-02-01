@@ -122,15 +122,16 @@ bool CNetworkInterface::InitializeNetworkManagers()
 	}
 
 	// Create the ARNetworkManager.
-	m_pNetworkManager = ARNETWORK_Manager_New( 	m_pNetworkALManager,
-												m_networkSettings.m_outboundParameters.size(),
-												m_networkSettings.m_outboundParameters.data(),
-												m_networkSettings.m_inboundParameters.size(),
-												m_networkSettings.m_inboundParameters.data(),
-												pingDelay,
-												OnDisconnect,
-												NULL,
-												&netError );
+	m_pNetworkManager = ARNETWORK_Manager_New(
+		m_pNetworkALManager,
+		m_networkSettings.m_outboundParameters.size(),
+		m_networkSettings.m_outboundParameters.data(),
+		m_networkSettings.m_inboundParameters.size(),
+		m_networkSettings.m_inboundParameters.data(),
+		pingDelay,
+		OnDisconnect,
+		NULL,
+		&netError );
 
 	if (netError != ARNETWORK_OK)
 	{
@@ -203,11 +204,6 @@ bool rebop::CNetworkInterface::StartNetworkThreads()
 void CNetworkInterface::StopNetwork()
 {
 	LOG( INFO ) << "Stopping Network...";
-
-	int failed = 0;
-
-	eARNETWORK_ERROR netError 		= ARNETWORK_OK;
-	eARNETWORKAL_ERROR netAlError 	= ARNETWORKAL_OK;
 
 	// ARNetwork cleanup
 	if( m_pNetworkManager != nullptr )
@@ -297,18 +293,19 @@ bool CNetworkInterface::Flush()
 	return true;
 }
 
-bool CNetworkInterface::SendData( const CDataPacket& dataIn, EOutboundBufferId outboundBufferIdIn, bool doDataCopyIn )
+bool CNetworkInterface::SendData( const CCommandPacket& dataIn, EOutboundBufferId outboundBufferIdIn, bool doDataCopyIn )
 {
 	// TODO: Make the callback a registerable callback
 
 	// Send packet to vehicle
-	eARNETWORK_ERROR ret = ARNETWORK_Manager_SendData( 	m_pNetworkManager,
-														(int)outboundBufferIdIn,
-														dataIn.m_pData,
-														dataIn.m_size,
-														nullptr,
-														DefaultCommandCallback,
-														( doDataCopyIn ? 1 : 0 ) );
+	eARNETWORK_ERROR ret = ARNETWORK_Manager_SendData(
+		m_pNetworkManager,
+		(int)outboundBufferIdIn,
+		dataIn.m_pData,
+		dataIn.m_bufferSize,
+		nullptr,
+		DefaultCommandCallback,
+		( doDataCopyIn ? 1 : 0 ) );
 
 	if( ret != eARNETWORK_ERROR::ARNETWORK_OK )
 	{
@@ -318,14 +315,15 @@ bool CNetworkInterface::SendData( const CDataPacket& dataIn, EOutboundBufferId o
 	return true;
 }
 
-bool CNetworkInterface::ReadData( CDataPacket& dataOut, EInboundBufferId inboundBufferIdIn )
+bool CNetworkInterface::ReadData( CCommandPacket& dataOut, EInboundBufferId inboundBufferIdIn )
 {
 	// Read packet from vehicle (indefinite blocking)
-	eARNETWORK_ERROR ret = ARNETWORK_Manager_ReadData(	m_pNetworkManager,
-														(int)inboundBufferIdIn,
-														dataOut.m_pData,
-														m_kMaxBytesToRead,
-														&dataOut.m_size );
+	eARNETWORK_ERROR ret = ARNETWORK_Manager_ReadData(
+		m_pNetworkManager,
+		(int)inboundBufferIdIn,
+		dataOut.m_pData,
+		m_kMaxBytesToRead,
+		&dataOut.m_bufferSize );
 
 	if( ret != eARNETWORK_ERROR::ARNETWORK_OK )
 	{
@@ -335,14 +333,15 @@ bool CNetworkInterface::ReadData( CDataPacket& dataOut, EInboundBufferId inbound
 	return true;
 }
 
-bool CNetworkInterface::TryReadData( CDataPacket& dataOut, EInboundBufferId inboundBufferIdIn )
+bool CNetworkInterface::TryReadData( CCommandPacket& dataOut, EInboundBufferId inboundBufferIdIn )
 {
 	// Read packet from vehicle (non-blocking)
-	eARNETWORK_ERROR ret = ARNETWORK_Manager_TryReadData(	m_pNetworkManager,
-															(int)inboundBufferIdIn,
-															dataOut.m_pData,
-															m_kMaxBytesToRead,
-															&dataOut.m_size );
+	eARNETWORK_ERROR ret = ARNETWORK_Manager_TryReadData(
+		m_pNetworkManager,
+		(int)inboundBufferIdIn,
+		dataOut.m_pData,
+		m_kMaxBytesToRead,
+		&dataOut.m_bufferSize );
 
 	if( ret != eARNETWORK_ERROR::ARNETWORK_OK )
 	{
@@ -352,15 +351,16 @@ bool CNetworkInterface::TryReadData( CDataPacket& dataOut, EInboundBufferId inbo
 	return true;
 }
 
-bool CNetworkInterface::ReadDataWithTimeout( CDataPacket& dataOut, EInboundBufferId inboundBufferIdIn, uint32_t timeoutMsIn )
+bool CNetworkInterface::ReadDataWithTimeout( CCommandPacket& dataOut, EInboundBufferId inboundBufferIdIn, uint32_t timeoutMsIn )
 {
 	// Read packet from vehicle (block for timeout duration)
-	eARNETWORK_ERROR ret = ARNETWORK_Manager_ReadDataWithTimeout(	m_pNetworkManager,
-																	(int)inboundBufferIdIn,
-																	dataOut.m_pData,
-																	m_kMaxBytesToRead,
-																	&dataOut.m_size,
-																	timeoutMsIn );
+	eARNETWORK_ERROR ret = ARNETWORK_Manager_ReadDataWithTimeout(
+		m_pNetworkManager,
+		(int)inboundBufferIdIn,
+		dataOut.m_pData,
+		m_kMaxBytesToRead,
+		&dataOut.m_bufferSize,
+		timeoutMsIn );
 
 	if( ret != eARNETWORK_ERROR::ARNETWORK_OK )
 	{
