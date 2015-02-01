@@ -19,6 +19,7 @@ Feel free to make suggestions!
 
 Note 1: I am developing this in Eclipse, so this includes project files. You can also use the makefile in the /Build/ folder.
 Note 2: You may be wondering where all of the ArSDK3 lib files are, as built. I simply combined them into a single static library.
+Note 3: You may not like my coding style, and I may not like yours, but I will still happily accept your pull requests. I'll make sure everything stays consistent, so don't let that stop you from contributing.
 Note 3: I've only partially tested this stuff! Beware! 
 
 I PROVIDE NO GUARANTEES OF THE FUNCTIONALITY OF THIS CODE, YOUR SAFETY, OTHERS' SAFETY, OR YOUR PROPERTY'S SAFETY!
