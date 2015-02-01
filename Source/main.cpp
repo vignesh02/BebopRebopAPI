@@ -1,27 +1,25 @@
-#include "CBebopInterface.h"
-
+// Includes
+#include "CARNetworkInterface.h"
 #include "Utility.hpp"
 
 // Set up easylogger
 INITIALIZE_EASYLOGGINGPP
 
-
-using namespace bebop;
+// Namespaces
+using namespace rebop;
 
 int main()
 {
-	CBebopInterface bebopInterface;
+	CBebopInterface bebop;
 
-	// Initialize the interface - Connects to the drone and sets up everything necessary for communications
-	if( !bebopInterface.Initialize() )
-	{
-		return 0;
-	}
+	// Initialize
+	bebop.Initialize();
 
 	// You're connected and ready to fly! Do stuff here!
+	bebop.Update();
 
 	// Cleanup - Kill the network and clean up memory
-	bebopInterface.Cleanup();
+	bebop.Cleanup();
 
 	return 0;
 }

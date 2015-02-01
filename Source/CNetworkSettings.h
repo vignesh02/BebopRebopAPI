@@ -4,7 +4,7 @@
 #include <array>
 #include <libARNetwork/ARNetwork.h>
 
-namespace bebop
+namespace rebop
 {
 
 class CNetworkSettings

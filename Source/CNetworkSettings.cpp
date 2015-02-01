@@ -1,13 +1,8 @@
-/*
- * CNetworkParameters.cpp
- *
- *  Created on: Jan 31, 2015
- *      Author: spiderkeys
- */
-
+// Includes
 #include "CNetworkSettings.h"
 
-using namespace bebop;
+// Namespaces
+using namespace rebop;
 
 CNetworkSettings::CNetworkSettings()
 {
