@@ -51,10 +51,11 @@ public:
 	bool m_killMonitor;
 	bool m_isConnected;
 
-	const uint32_t m_kMonitorRetryDelay = 5;
+
 
 	// Constants
-	const int m_kMaxBytesToRead = 131072;		// 128kb - arbitrary
+	static const uint32_t m_kMonitorRetryDelay 	= 5;
+	static const int m_kMaxBytesToRead 			= 131072;		// 128kb - arbitrary
 
 	// Methods
 	CNetworkInterface();

@@ -171,6 +171,15 @@ void CNetworkInterface::Cleanup()
 	// Close all connections, kill threads, and clean up memory used for networking
 	StopNetwork();
 
+	// Kill the monitor thread
+	if( m_tMonitorThread != nullptr )
+	{
+		m_killMonitor = true;
+		ARSAL_Thread_Join( m_tMonitorThread, nullptr );
+		ARSAL_Thread_Destroy( &( m_tMonitorThread ) );
+		m_tMonitorThread = nullptr;
+	}
+
 	LOG( INFO ) << "Cleaned up AR Network Interface.";
 }
 
@@ -188,7 +197,7 @@ void CNetworkInterface::OnDisconnect( ARNETWORK_Manager_t* networkManagerIn, ARN
 	LOG( INFO ) << "Disconnected from the target!";
 
 	// First and foremost, set our connection status to false and wake up the monitor thread to try to reconnect
-	m_isConnected = false;
+	networkInterface->m_isConnected = false;
 	// TODO: condition variable wakeup for monitor thread
 
 	// Next, if we have a user registered callback, call that!
@@ -203,7 +212,7 @@ void CNetworkInterface::OnDisconnect( ARNETWORK_Manager_t* networkManagerIn, ARN
 	}
 }
 
-bool rebop::CNetworkInterface::StartNetworkThreads()
+bool CNetworkInterface::StartNetworkThreads()
 {
 	LOG( INFO ) << "Starting Tx and Rx Threads...";
 
@@ -579,31 +588,41 @@ void* CNetworkInterface::MonitorThreadFunction( void* dataIn )
 		return nullptr;
 	}
 
-	while( m_killMonitor == false )
+	while( true )
 	{
 		// TODO: Replace this with a condition variable so it just sleeps until alerted
-		// TODO: Make sure things are threadsafe after finishing rapid prototyping
-
-		// Check to see if we've disconnected
-		if( m_isConnected == false )
+		// TODO: Make sure things are threadsafe after finishing rapid prototyping. They currently are not!
+		if( networkInterface->m_killMonitor == true )
 		{
-			while( m_isConnected == false )
-			{
-				// Stop network and do cleanup
-				networkInterface->StopNetwork();
-
-				// Reinitialize network and attempt to connect again
-				networkInterface->Initialize();
-
-				// Sleep for some kind of delay between attempts (default 5s)
-				sleep( m_kMonitorRetryDelay );
-			}
-
-			// Go back to sleep
+			break;
 		}
 
-		// Should be asleep, go back to sleep if we somehow spuriously woke up
+		// Check to see if we've disconnected
+		if( networkInterface->m_isConnected == false  )
+		{
+			// Stop network and do cleanup
+			networkInterface->StopNetwork();
+
+			// Reinitialize network and attempt to connect again
+			networkInterface->Initialize();
+
+			if( networkInterface->m_isConnected == true )
+			{
+				// Reconnected successfully
+				continue;
+			}
+
+			// Sleep for some kind of delay between attempts (default 5s)
+			sleep( m_kMonitorRetryDelay );
+		}
+		else
+		{
+			// Go back to sleep
+		}
 	}
+
+	// Stop network and do cleanup
+	networkInterface->StopNetwork();
 
 	return nullptr;
 }
