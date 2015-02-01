@@ -14,6 +14,8 @@ public:
 	// Attributes
 	CNetworkInterface m_networkInterface;
 
+	bool m_isConnected;
+
 	//Methods
 	CVehicleInterface();
 	virtual ~CVehicleInterface();
