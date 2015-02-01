@@ -1,22 +1,22 @@
 #pragma once
 
 // Includes
-#include "CARNetworkInterface.h"
+#include "CNetworkInterface.h"
 
 namespace rebop
 {
 
-class CARVehicleInterface
+class CVehicleInterface
 {
 public:
 	// Pointers
 
 	// Attributes
-	CARNetworkInterface m_networkInterface;
+	CNetworkInterface m_networkInterface;
 
 	//Methods
-	CARVehicleInterface();
-	virtual ~CARVehicleInterface();
+	CVehicleInterface();
+	virtual ~CVehicleInterface();
 
 	void Initialize();
 	void Update();

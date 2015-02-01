@@ -5,7 +5,7 @@
 namespace rebop
 {
 
-class CBebopInterface : public CARVehicleInterface
+class CBebopInterface : public CVehicleInterface
 {
 public:
 	CBebopInterface();

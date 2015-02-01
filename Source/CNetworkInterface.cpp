@@ -1,12 +1,12 @@
 // Includes
-#include "CARNetworkInterface.h"
+#include "CNetworkInterface.h"
 #include "Utility.hpp"
 
 // Namespaces
 using namespace std;
 using namespace rebop;
 
-CARNetworkInterface::CARNetworkInterface()
+CNetworkInterface::CNetworkInterface()
 {
 	// Initialize pointers
 	m_pNetworkALManager 		= nullptr;
@@ -15,11 +15,11 @@ CARNetworkInterface::CARNetworkInterface()
 	m_tTxThread					= nullptr;
 }
 
-CARNetworkInterface::~CARNetworkInterface()
+CNetworkInterface::~CNetworkInterface()
 {
 }
 
-bool CARNetworkInterface::Initialize()
+bool CNetworkInterface::Initialize()
 {
 	LOG( INFO ) << "Initializing AR Network Interface...";
 
@@ -46,7 +46,7 @@ bool CARNetworkInterface::Initialize()
 	return true;
 }
 
-bool CARNetworkInterface::PerformNetworkDiscovery()
+bool CNetworkInterface::PerformNetworkDiscovery()
 {
 	LOG( INFO ) << "Performing network discovery...";
 
@@ -92,7 +92,7 @@ bool CARNetworkInterface::PerformNetworkDiscovery()
 	}
 }
 
-bool CARNetworkInterface::InitializeNetworkManagers()
+bool CNetworkInterface::InitializeNetworkManagers()
 {
 	LOG( INFO ) << "Initializing Network Manager and Network Abstraction Layer Manager...";
 
@@ -143,7 +143,7 @@ bool CARNetworkInterface::InitializeNetworkManagers()
 	return true;
 }
 
-void CARNetworkInterface::Cleanup()
+void CNetworkInterface::Cleanup()
 {
 	LOG( INFO ) << "Cleaning up AR Network Interface...";
 
@@ -154,8 +154,10 @@ void CARNetworkInterface::Cleanup()
 }
 
 
-void CARNetworkInterface::OnDisconnect( ARNETWORK_Manager_t* networkManagerIn, ARNETWORKAL_Manager_t* networkALManagerIn, void* customDataIn )
+void CNetworkInterface::OnDisconnect( ARNETWORK_Manager_t* networkManagerIn, ARNETWORKAL_Manager_t* networkALManagerIn, void* customDataIn )
 {
+	// This function will be called if the drone somehow disconnects or if the connection is closed manually
+
 	LOG( INFO ) << "Disconnected from the target!";
 
 	if( m_pDisconnectionCallback != nullptr )
@@ -169,7 +171,7 @@ void CARNetworkInterface::OnDisconnect( ARNETWORK_Manager_t* networkManagerIn, A
 	}
 }
 
-bool rebop::CARNetworkInterface::StartNetworkThreads()
+bool rebop::CNetworkInterface::StartNetworkThreads()
 {
 	LOG( INFO ) << "Starting Tx and Rx Threads...";
 
@@ -192,7 +194,7 @@ bool rebop::CARNetworkInterface::StartNetworkThreads()
 	return true;
 }
 
-void CARNetworkInterface::StopNetwork()
+void CNetworkInterface::StopNetwork()
 {
 	LOG( INFO ) << "Stopping Network...";
 
@@ -242,7 +244,7 @@ void CARNetworkInterface::StopNetwork()
 }
 
 
-eARDISCOVERY_ERROR CARNetworkInterface::SendJsonCallback( uint8_t *txDataIn, uint32_t *txDataSizeIn, void *customDataIn )
+eARDISCOVERY_ERROR CNetworkInterface::SendJsonCallback( uint8_t *txDataIn, uint32_t *txDataSizeIn, void *customDataIn )
 {
 	// Cast to get the network settings object
 	CNetworkSettings *settings = (CNetworkSettings*)customDataIn;
@@ -276,7 +278,7 @@ eARDISCOVERY_ERROR CARNetworkInterface::SendJsonCallback( uint8_t *txDataIn, uin
     return eARDISCOVERY_ERROR::ARDISCOVERY_OK;
 }
 
-eARDISCOVERY_ERROR CARNetworkInterface::ReceiveJsonCallback( uint8_t *rxDataIn, uint32_t rxDataSizeIn, char *ipIn, void *customDataIn )
+eARDISCOVERY_ERROR CNetworkInterface::ReceiveJsonCallback( uint8_t *rxDataIn, uint32_t rxDataSizeIn, char *ipIn, void *customDataIn )
 {
 	// Cast to get the network settings object
 	CNetworkSettings *settings = (CNetworkSettings *)customDataIn;
@@ -307,13 +309,67 @@ eARDISCOVERY_ERROR CARNetworkInterface::ReceiveJsonCallback( uint8_t *rxDataIn, 
     return eARDISCOVERY_ERROR::ARDISCOVERY_OK;
 }
 
-void rebop::CARNetworkInterface::RegisterDisconnectionCallback( TDisconnectionCallback &callbackIn )
+void CNetworkInterface::RegisterDisconnectionCallback( TDisconnectionCallback &callbackIn )
 {
 	// Register the callback function to be used upon disconnection
 	m_pDisconnectionCallback = callbackIn;
 }
 
-void rebop::CARNetworkInterface::UnregisterDisconnectionCallback()
+void CNetworkInterface::UnregisterDisconnectionCallback()
 {
 	m_pDisconnectionCallback = nullptr;
+}
+
+eARNETWORK_MANAGER_CALLBACK_RETURN CNetworkInterface::CommandCallback( int bufferIdIn, uint8_t *dataIn, void *customDataIn, eARNETWORK_MANAGER_CALLBACK_STATUS causeIn )
+{
+    eARNETWORK_MANAGER_CALLBACK_RETURN retval = ARNETWORK_MANAGER_CALLBACK_RETURN_DEFAULT;
+
+    switch( causeIn )
+    {
+		// Data was sent
+		case eARNETWORK_MANAGER_CALLBACK_STATUS::ARNETWORK_MANAGER_CALLBACK_STATUS_SENT:
+		{
+			break;
+		}
+
+		// Acknowledgment was received
+		case eARNETWORK_MANAGER_CALLBACK_STATUS::ARNETWORK_MANAGER_CALLBACK_STATUS_ACK_RECEIVED:
+		{
+			break;
+		}
+
+		// Timeout occurred, data not received- This callback must return what the network manager should do with the data
+		case eARNETWORK_MANAGER_CALLBACK_STATUS::ARNETWORK_MANAGER_CALLBACK_STATUS_TIMEOUT:
+		{
+			retval = ARNETWORK_MANAGER_CALLBACK_RETURN_DATA_POP;
+			break;
+		}
+
+		// Data will not be sent
+		case eARNETWORK_MANAGER_CALLBACK_STATUS::ARNETWORK_MANAGER_CALLBACK_STATUS_CANCEL:
+		{
+			break;
+		}
+
+		// Free the data sent without copying data
+		case eARNETWORK_MANAGER_CALLBACK_STATUS::ARNETWORK_MANAGER_CALLBACK_STATUS_FREE:
+		{
+			break;
+		}
+
+		// Use of the data is complete, and it will not be used anymore
+		case eARNETWORK_MANAGER_CALLBACK_STATUS::ARNETWORK_MANAGER_CALLBACK_STATUS_DONE:
+		{
+			break;
+		}
+
+		// Unknown status
+		default:
+		{
+			LOG( ERROR ) << "Unknown callback status!";
+			break;
+		}
+    }
+
+    return retval;
 }

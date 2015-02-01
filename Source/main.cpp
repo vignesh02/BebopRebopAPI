@@ -1,5 +1,5 @@
 // Includes
-#include "CARNetworkInterface.h"
+#include "CNetworkInterface.h"
 #include "Utility.hpp"
 
 // Set up easylogger

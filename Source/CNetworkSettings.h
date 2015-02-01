@@ -7,19 +7,26 @@
 namespace rebop
 {
 
+enum EInputBufferId
+{
+	INBOUND								= 127,
+	INBOUND_WITH_ACK					= 126
+};
+
+enum EOutputBufferId
+{
+	OUTBOUND							= 10,
+	OUTBOUND_WITH_ACK					= 11,
+};
+
 class CNetworkSettings
 {
 public:
 	// Constants
-	const int OUTBOUND_WITHOUT_ACK_INDEX 	= 0;
+	const int OUTBOUND_INDEX 				= 0;
 	const int OUTBOUND_WITH_ACK_INDEX		= 1;
-	const int INBOUND_WITHOUT_ACK_INDEX		= 0;
+	const int INBOUND_INDEX					= 0;
 	const int INBOUND_WITH_ACK_INDEX 		= 1;
-
-	const int OUTBOUND_WITHOUT_ACK_ID 		= 10;
-	const int OUTBOUND_WITH_ACK_ID 			= 11;
-	const int INBOUND_WITHOUT_ACK_ID 		= 127;
-	const int INBOUND_WITH_ACK_ID 			= 126;
 
 	const char* TARGET_IP_ADDRESS 			= "192.168.43.1";
 	const int DISCOVERY_PORT 				= 44444;
