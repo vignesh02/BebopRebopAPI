@@ -15,11 +15,12 @@ int main()
 	// Initialize
 	bebop.Initialize();
 
-	// You're connected and ready to fly! Do stuff here!
+	// You're connected and ready to run some flight logic!
 	bebop.Update();
 
 	// Cleanup - Kill the network and clean up memory
 	bebop.Cleanup();
 
 	return 0;
+
 }

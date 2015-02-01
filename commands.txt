@@ -1,0 +1,102 @@
+// Nav
+PilotingFlatTrim (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen);
+PilotingTakeOff (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen);
+PilotingPCMD (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, uint8_t _flag, int8_t _roll, int8_t _pitch, int8_t _yaw, int8_t _gaz, float _psi);
+PilotingLanding (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen);
+PilotingEmergency (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen);
+PilotingNavigateHome (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, uint8_t _start);
+PilotingAutoTakeOffMode (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, uint8_t _state);
+PilotingSettingsMaxAltitude (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, float _current);
+PilotingSettingsMaxTilt (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, float _current);
+PilotingSettingsAbsolutControl (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, uint8_t _on);
+SpeedSettingsMaxVerticalSpeed (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, float _current);
+SpeedSettingsMaxRotationSpeed (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, float _current);
+SpeedSettingsHullProtection (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, uint8_t _present);
+SpeedSettingsOutdoor (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, uint8_t _outdoor);
+AnimationsFlip (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, eARCOMMANDS_ARDRONE3_ANIMATIONS_FLIP_DIRECTION _direction);
+GPSSettingsSetHome (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, double _latitude, double _longitude, double _altitude);
+GPSSettingsResetHome (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen);
+
+// Media
+CameraOrientation (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, int8_t _tilt, int8_t _pan);
+PictureSettingsPictureFormatSelection (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, eARCOMMANDS_ARDRONE3_PICTURESETTINGS_PICTUREFORMATSELECTION_TYPE _type);
+PictureSettingsAutoWhiteBalanceSelection (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, eARCOMMANDS_ARDRONE3_PICTURESETTINGS_AUTOWHITEBALANCESELECTION_TYPE _type);
+PictureSettingsExpositionSelection (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, float _value);
+PictureSettingsSaturationSelection (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, float _value);
+PictureSettingsTimelapseSelection (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, uint8_t _enabled, float _interval);
+PictureSettingsVideoAutorecordSelection (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, uint8_t _enabled, uint8_t _mass_storage_id);
+MediaRecordPicture (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, uint8_t _mass_storage_id);
+MediaRecordVideo (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, eARCOMMANDS_ARDRONE3_MEDIARECORD_VIDEO_RECORD _record, uint8_t _mass_storage_id);
+MediaStreamingVideoEnable (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, uint8_t _enable);
+CameraStateOrientation (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, int8_t _tilt, int8_t _pan);
+
+// Network
+NetworkWifiScan (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, eARCOMMANDS_ARDRONE3_NETWORK_WIFISCAN_BAND _band);
+NetworkWifiAuthChannel (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen);
+NetworkSettingsWifiSelection (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, eARCOMMANDS_ARDRONE3_NETWORKSETTINGS_WIFISELECTION_TYPE _type, eARCOMMANDS_ARDRONE3_NETWORKSETTINGS_WIFISELECTION_BAND _band, uint8_t _channel);
+
+// Debug
+DebugVideoEnableWobbleCancellation (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, uint8_t _enable);
+DebugVideoSyncAnglesGyros (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, float _anglesDelay_s, float _gyrosDelay_s);
+DebugVideoManualWhiteBalance (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen);
+DebugBatteryDebugSettingsUseDrone2Battery (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, uint8_t _drone2BatteryUsed);
+
+
+
+////////////// Incoming data
+
+// Navdata
+PilotingStateFlatTrimChanged (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen);
+PilotingStateFlyingStateChanged (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, eARCOMMANDS_ARDRONE3_PILOTINGSTATE_FLYINGSTATECHANGED_STATE _state);
+PilotingStateAlertStateChanged (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, eARCOMMANDS_ARDRONE3_PILOTINGSTATE_ALERTSTATECHANGED_STATE _state);
+PilotingStateNavigateHomeStateChanged (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, eARCOMMANDS_ARDRONE3_PILOTINGSTATE_NAVIGATEHOMESTATECHANGED_STATE _state, eARCOMMANDS_ARDRONE3_PILOTINGSTATE_NAVIGATEHOMESTATECHANGED_REASON _reason);
+PilotingStatePositionChanged (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, double _latitude, double _longitude, double _altitude);
+PilotingStateSpeedChanged (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, float _speedX, float _speedY, float _speedZ);
+PilotingStateAttitudeChanged (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, float _roll, float _pitch, float _yaw);
+PilotingStateAutoTakeOffModeChanged (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, uint8_t _state);
+PilotingStateAltitudeChanged (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, double _altitude);
+PilotingSettingsStateMaxAltitudeChanged (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, float _current, float _min, float _max);
+PilotingSettingsStateMaxTiltChanged (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, float _current, float _min, float _max);
+PilotingSettingsStateAbsolutControlChanged (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, uint8_t _on);
+SpeedSettingsStateMaxVerticalSpeedChanged (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, float _current, float _min, float _max);
+SpeedSettingsStateMaxRotationSpeedChanged (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, float _current, float _min, float _max);
+SpeedSettingsStateHullProtectionChanged (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, uint8_t _present);
+SpeedSettingsStateOutdoorChanged (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, uint8_t _outdoor);
+GPSSettingsStateHomeChanged (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, double _latitude, double _longitude, double _altitude);
+GPSSettingsStateResetHomeChanged (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, double _latitude, double _longitude, double _altitude);
+GPSSettingsStateGPSFixStateChanged (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, uint8_t _fixed);
+GPSSettingsStateGPSUpdateStateChanged (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, eARCOMMANDS_ARDRONE3_GPSSETTINGSSTATE_GPSUPDATESTATECHANGED_STATE _state);
+
+// System status
+SettingsStateProductMotorVersionListChanged (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, uint8_t _motor_number, const char * _type, const char * _software, const char * _hardware);
+SettingsStateProductGPSVersionChanged (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, const char * _software, const char * _hardware);
+SettingsStateMotorErrorStateChanged (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, uint8_t _motorIds, eARCOMMANDS_ARDRONE3_SETTINGSSTATE_MOTORERRORSTATECHANGED_MOTORERROR _motorError);
+SettingsStateMotorSoftwareVersionChanged (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, const char * _version);
+SettingsStateMotorFlightsStatusChanged (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, uint16_t _nbFlights, uint16_t _lastFlightDuration, uint32_t _totalFlightDuration);
+SettingsStateMotorErrorLastErrorChanged (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, eARCOMMANDS_ARDRONE3_SETTINGSSTATE_MOTORERRORLASTERRORCHANGED_MOTORERROR _motorError);
+
+// Media
+MediaRecordStatePictureStateChanged (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, uint8_t _state, uint8_t _mass_storage_id);
+MediaRecordStateVideoStateChanged (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, eARCOMMANDS_ARDRONE3_MEDIARECORDSTATE_VIDEOSTATECHANGED_STATE _state, uint8_t _mass_storage_id);
+PictureSettingsStatePictureFormatChanged (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, eARCOMMANDS_ARDRONE3_PICTURESETTINGSSTATE_PICTUREFORMATCHANGED_TYPE _type);
+PictureSettingsStateAutoWhiteBalanceChanged (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, eARCOMMANDS_ARDRONE3_PICTURESETTINGSSTATE_AUTOWHITEBALANCECHANGED_TYPE _type);
+PictureSettingsStateExpositionChanged (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, float _value, float _min, float _max);
+PictureSettingsStateSaturationChanged (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, float _value, float _min, float _max);
+PictureSettingsStateTimelapseChanged (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, uint8_t _enabled, float _interval, float _minInterval, float _maxInterval);
+PictureSettingsStateVideoAutorecordChanged (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, uint8_t _enabled, uint8_t _mass_storage_id);
+MediaStreamingStateVideoEnableChanged (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, eARCOMMANDS_ARDRONE3_MEDIASTREAMINGSTATE_VIDEOENABLECHANGED_ENABLED _enabled);
+
+// Network
+NetworkStateWifiScanListChanged (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, const char * _ssid, int16_t _rssi, eARCOMMANDS_ARDRONE3_NETWORKSTATE_WIFISCANLISTCHANGED_BAND _band, uint8_t _channel);
+NetworkStateAllWifiScanChanged (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen);
+NetworkStateWifiAuthChannelListChanged (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, eARCOMMANDS_ARDRONE3_NETWORKSTATE_WIFIAUTHCHANNELLISTCHANGED_BAND _band, uint8_t _channel, uint8_t _in_or_out);
+NetworkStateAllWifiAuthChannelChanged (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen);
+NetworkSettingsStateWifiSelectionChanged (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, eARCOMMANDS_ARDRONE3_NETWORKSETTINGSSTATE_WIFISELECTIONCHANGED_TYPE _type, eARCOMMANDS_ARDRONE3_NETWORKSETTINGSSTATE_WIFISELECTIONCHANGED_BAND _band, uint8_t _channel);
+
+// Debug
+DebugBatteryDebugSettingsStateUseDrone2BatteryChanged (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, uint8_t _drone2BatteryUsed);
+DebugGPSDebugStateNbSatelliteChanged (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, uint8_t _nbSatellite);
+
+
+
+

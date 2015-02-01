@@ -11,6 +11,9 @@ class CBebopInterface : public CVehicleInterface
 public:
 	CBebopInterface();
 	virtual ~CBebopInterface();
+
+	void Takeoff();
+	void Land();
 };
 
 }

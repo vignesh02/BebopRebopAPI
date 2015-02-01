@@ -7,6 +7,7 @@ using namespace rebop;
 
 CVehicleInterface::CVehicleInterface()
 {
+	// Init attributes
 	m_isConnected = false;
 }
 

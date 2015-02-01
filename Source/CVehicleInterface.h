@@ -20,9 +20,9 @@ public:
 	CVehicleInterface();
 	virtual ~CVehicleInterface();
 
-	void Initialize();
-	void Update();
-	void Cleanup();
+	virtual void Initialize();
+	virtual void Update();
+	virtual void Cleanup();
 };
 
 }
