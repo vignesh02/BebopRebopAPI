@@ -2,7 +2,7 @@
  
  \-Garrison Keillor
 
-The official Parrot ArDroneSDK3 is pretty user unfriendly and poorly documented, with very little sample code, especially for the Bebop. This library aims to fix that. Stay tuned.
+The official Parrot ArDrone SDK v3 is pretty user unfriendly and poorly documented, with very little sample code, especially for the Bebop. This (soon to be) library aims to fix that. Stay tuned.
 
 Current todo-list:
 
@@ -11,13 +11,15 @@ Current todo-list:
 * Vehicle specific status manager (latest and greatest of status info parsed in, so users can poll when they want instead of consuming messages)
 * SendWithTimeout (combines send with readwithtimeout to let you do a blocking send in one call, for things like takeoff, land, etc)
 * Finishing adding all of the sendable commands for the Bebop (piloting commands are in, but there is a bunch of media and network stuff to add)
+* Armhf build configuration
 * Probably more, but I don't know what yet
 
 Feel free to make suggestions!
 
 
-
-Note: I've only partially tested this stuff! 
+Note 1: I am developing this in Eclipse, so this includes project files. You can also use the makefile in the /Build/ folder.
+Note 2: You may be wondering where all of the ArSDK3 lib files are, as built. I simply combined them into a single static library.
+Note 3: I've only partially tested this stuff! Beware! 
 
 I PROVIDE NO GUARANTEES OF THE FUNCTIONALITY OF THIS CODE, YOUR SAFETY, OTHERS' SAFETY, OR YOUR PROPERTY'S SAFETY!
 USE AT YOUR OWN RISK!
