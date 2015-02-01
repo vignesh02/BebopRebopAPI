@@ -28,7 +28,7 @@ PictureSettingsVideoAutorecordSelection (uint8_t *buffer, int32_t buffLen, int32
 MediaRecordPicture (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, uint8_t _mass_storage_id);
 MediaRecordVideo (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, eARCOMMANDS_ARDRONE3_MEDIARECORD_VIDEO_RECORD _record, uint8_t _mass_storage_id);
 MediaStreamingVideoEnable (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, uint8_t _enable);
-CameraStateOrientation (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, int8_t _tilt, int8_t _pan);
+
 
 // Network
 NetworkWifiScan (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, eARCOMMANDS_ARDRONE3_NETWORK_WIFISCAN_BAND _band);
@@ -85,6 +85,7 @@ PictureSettingsStateSaturationChanged (uint8_t *buffer, int32_t buffLen, int32_t
 PictureSettingsStateTimelapseChanged (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, uint8_t _enabled, float _interval, float _minInterval, float _maxInterval);
 PictureSettingsStateVideoAutorecordChanged (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, uint8_t _enabled, uint8_t _mass_storage_id);
 MediaStreamingStateVideoEnableChanged (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, eARCOMMANDS_ARDRONE3_MEDIASTREAMINGSTATE_VIDEOENABLECHANGED_ENABLED _enabled);
+CameraStateOrientation (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, int8_t _tilt, int8_t _pan);
 
 // Network
 NetworkStateWifiScanListChanged (uint8_t *buffer, int32_t buffLen, int32_t *cmdLen, const char * _ssid, int16_t _rssi, eARCOMMANDS_ARDRONE3_NETWORKSTATE_WIFISCANLISTCHANGED_BAND _band, uint8_t _channel);
