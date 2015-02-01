@@ -17,7 +17,7 @@ extern "C"
 }
 
 #include "CNetworkSettings.h"
-#include "CDataPacket.h"
+#include "CCommandPacket.h"
 
 namespace rebop
 {

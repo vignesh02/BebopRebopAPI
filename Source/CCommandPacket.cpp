@@ -1,6 +1,6 @@
 // Includes
-#include "CDataPacket.h"
 #include <stdlib.h>
+#include "CCommandPacket.h"
 
 using namespace rebop;
 
