@@ -34,7 +34,7 @@ void CNetworkSettings::InitializeIOParameters()
 	//										| TODO: No idea what "isOverwriting" means
 
 	// Outbound without ack
-	m_outboundParameters[ OUTBOUND_INDEX ].ID								= EOutputBufferId::OUTBOUND;
+	m_outboundParameters[ OUTBOUND_INDEX ].ID								= EOutboundBufferId::OUTBOUND;
 	m_outboundParameters[ OUTBOUND_INDEX ].dataType 						= eARNETWORKAL_FRAME_TYPE::ARNETWORKAL_FRAME_TYPE_DATA;
 	m_outboundParameters[ OUTBOUND_INDEX ].sendingWaitTimeMs 				= 5;
 	m_outboundParameters[ OUTBOUND_INDEX ].ackTimeoutMs 					= -1;
@@ -44,7 +44,7 @@ void CNetworkSettings::InitializeIOParameters()
 	m_outboundParameters[ OUTBOUND_INDEX ].isOverwriting 					= 0;
 
 	// Outbound with ack
-	m_outboundParameters[ OUTBOUND_WITH_ACK_INDEX ].ID 						= EOutputBufferId::OUTBOUND_WITH_ACK;
+	m_outboundParameters[ OUTBOUND_WITH_ACK_INDEX ].ID 						= EOutboundBufferId::OUTBOUND_WITH_ACK;
 	m_outboundParameters[ OUTBOUND_WITH_ACK_INDEX ].dataType 				= eARNETWORKAL_FRAME_TYPE::ARNETWORKAL_FRAME_TYPE_DATA_WITH_ACK;
 	m_outboundParameters[ OUTBOUND_WITH_ACK_INDEX ].sendingWaitTimeMs 		= 20;
 	m_outboundParameters[ OUTBOUND_WITH_ACK_INDEX ].ackTimeoutMs 			= 500;
@@ -54,7 +54,7 @@ void CNetworkSettings::InitializeIOParameters()
 	m_outboundParameters[ OUTBOUND_WITH_ACK_INDEX ].isOverwriting 			= 0;
 
 	// Inbound without ack
-	m_inboundParameters[ INBOUND_INDEX ].ID									= EInputBufferId::INBOUND;
+	m_inboundParameters[ INBOUND_INDEX ].ID									= EInboundBufferId::INBOUND;
 	m_inboundParameters[ INBOUND_INDEX ].dataType 							= eARNETWORKAL_FRAME_TYPE::ARNETWORKAL_FRAME_TYPE_DATA;
 	m_inboundParameters[ INBOUND_INDEX ].sendingWaitTimeMs 					= 20;
 	m_inboundParameters[ INBOUND_INDEX ].ackTimeoutMs 						= 500;
@@ -64,7 +64,7 @@ void CNetworkSettings::InitializeIOParameters()
 	m_inboundParameters[ INBOUND_INDEX ].isOverwriting 						= 0;
 
 	// Inbound with ack
-	m_inboundParameters[ INBOUND_WITH_ACK_INDEX ].ID 						= EInputBufferId::INBOUND_WITH_ACK;
+	m_inboundParameters[ INBOUND_WITH_ACK_INDEX ].ID 						= EInboundBufferId::INBOUND_WITH_ACK;
 	m_inboundParameters[ INBOUND_WITH_ACK_INDEX ].dataType 					= eARNETWORKAL_FRAME_TYPE::ARNETWORKAL_FRAME_TYPE_DATA_WITH_ACK;
 	m_inboundParameters[ INBOUND_WITH_ACK_INDEX ].sendingWaitTimeMs 		= 20;
 	m_inboundParameters[ INBOUND_WITH_ACK_INDEX ].ackTimeoutMs	 			= -1;

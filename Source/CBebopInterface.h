@@ -1,6 +1,7 @@
 #pragma once
 
 // Includes
+#include "CVehicleInterface.h"
 
 namespace rebop
 {

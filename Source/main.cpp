@@ -1,5 +1,5 @@
 // Includes
-#include "CNetworkInterface.h"
+#include "CBebopInterface.h"
 #include "Utility.hpp"
 
 // Set up easylogger

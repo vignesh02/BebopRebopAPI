@@ -7,13 +7,13 @@
 namespace rebop
 {
 
-enum EInputBufferId
+enum EInboundBufferId
 {
 	INBOUND								= 127,
 	INBOUND_WITH_ACK					= 126
 };
 
-enum EOutputBufferId
+enum EOutboundBufferId
 {
 	OUTBOUND							= 10,
 	OUTBOUND_WITH_ACK					= 11,

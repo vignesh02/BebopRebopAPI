@@ -157,13 +157,19 @@ void CNetworkInterface::Cleanup()
 void CNetworkInterface::OnDisconnect( ARNETWORK_Manager_t* networkManagerIn, ARNETWORKAL_Manager_t* networkALManagerIn, void* customDataIn )
 {
 	// This function will be called if the drone somehow disconnects or if the connection is closed manually
+	CNetworkInterface *networkInterface = (CNetworkInterface*)customDataIn;
+
+	if( !networkInterface )
+	{
+		return;
+	}
 
 	LOG( INFO ) << "Disconnected from the target!";
 
-	if( m_pDisconnectionCallback != nullptr )
+	if( networkInterface->m_pDisconnectionCallback != nullptr )
 	{
 		LOG( INFO ) << "Activating disconnection callback.";
-		m_pDisconnectionCallback();
+		networkInterface->m_pDisconnectionCallback();
 	}
 	else
 	{
@@ -278,6 +284,147 @@ eARDISCOVERY_ERROR CNetworkInterface::SendJsonCallback( uint8_t *txDataIn, uint3
     return eARDISCOVERY_ERROR::ARDISCOVERY_OK;
 }
 
+bool CNetworkInterface::Flush()
+{
+	// Flush all buffers in the network manager
+	eARNETWORK_ERROR ret = ARNETWORK_Manager_Flush( m_pNetworkManager );
+
+	if( ret != eARNETWORK_ERROR::ARNETWORK_OK )
+	{
+		return false;
+	}
+
+	return true;
+}
+
+bool CNetworkInterface::SendData( const CDataPacket& dataIn, EOutboundBufferId outboundBufferIdIn, bool doDataCopyIn )
+{
+	// TODO: Make the callback a registerable callback
+
+	// Send packet to vehicle
+	eARNETWORK_ERROR ret = ARNETWORK_Manager_SendData( 	m_pNetworkManager,
+														outboundBufferIdIn,
+														dataIn.m_pData,
+														dataIn.m_size,
+														nullptr,
+														DefaultCommandCallback,
+														( doDataCopyIn ? 1 : 0 ) );
+
+	if( ret != eARNETWORK_ERROR::ARNETWORK_OK )
+	{
+		return false;
+	}
+
+	return true;
+}
+
+bool CNetworkInterface::ReadData( CDataPacket& dataOut, EInboundBufferId inboundBufferIdIn )
+{
+	// Read packet from vehicle (indefinite blocking)
+	eARNETWORK_ERROR ret = ARNETWORK_Manager_ReadData(	m_pNetworkManager,
+														inboundBufferIdIn,
+														dataOut.m_pData,
+														m_kMaxBytesToRead,
+														&dataOut.m_size );
+
+	if( ret != eARNETWORK_ERROR::ARNETWORK_OK )
+	{
+		return false;
+	}
+
+	return true;
+}
+
+bool CNetworkInterface::TryReadData( CDataPacket& dataOut, EInboundBufferId inboundBufferIdIn )
+{
+	// Read packet from vehicle (non-blocking)
+	eARNETWORK_ERROR ret = ARNETWORK_Manager_TryReadData(	m_pNetworkManager,
+															inboundBufferIdIn,
+															dataOut.m_pData,
+															m_kMaxBytesToRead,
+															&dataOut.m_size );
+
+	if( ret != eARNETWORK_ERROR::ARNETWORK_OK )
+	{
+		return false;
+	}
+
+	return true;
+}
+
+bool CNetworkInterface::ReadDataWithTimeout( CDataPacket& dataOut, EInboundBufferId inboundBufferIdIn, uint32_t timeoutMsIn )
+{
+	// Read packet from vehicle (block for timeout duration)
+	eARNETWORK_ERROR ret = ARNETWORK_Manager_ReadDataWithTimeout(	m_pNetworkManager,
+																	inboundBufferIdIn,
+																	dataOut.m_pData,
+																	m_kMaxBytesToRead,
+																	&dataOut.m_size,
+																	timeoutMsIn );
+
+	if( ret != eARNETWORK_ERROR::ARNETWORK_OK )
+	{
+		return false;
+	}
+
+	return true;
+}
+
+bool CNetworkInterface::FlushInboundBuffer( EInboundBufferId inboundBufferIdIn )
+{
+	eARNETWORK_ERROR ret = ARNETWORK_Manager_FlushInputBuffer( m_pNetworkManager, inboundBufferIdIn );
+
+	if( ret != eARNETWORK_ERROR::ARNETWORK_OK )
+	{
+		return false;
+	}
+
+	return true;
+}
+
+bool CNetworkInterface::FlushOutboundBuffer( EOutboundBufferId outboundBufferIdIn )
+{
+	// WARNING: Parrot's documentation about what is an input buffer/output buffer is confusing and inconsistent.
+	// Logically, you would expect the output buffer to be the buffer that you are writing commands to, but their documentation contradicts this
+	// in one place, and then contradicts itself for the GetLatency function. ALl this to say, FlushInput/Output may need swapping. \/(o.o)\/
+	eARNETWORK_ERROR ret = ARNETWORK_Manager_FlushOutputBuffer( m_pNetworkManager, outboundBufferIdIn );
+
+	if( ret != eARNETWORK_ERROR::ARNETWORK_OK )
+	{
+		return false;
+	}
+
+	return true;
+}
+
+bool CNetworkInterface::SetMinimumTimeBetweenSends( uint32_t delayMsIn )
+{
+	// Set the minimum time delay between sends - default value is 1ms
+	// Setting a bad minimum time can cause erratic behaviour. Don't do it!
+	eARNETWORK_ERROR ret = ARNETWORK_Manager_SetMinimumTimeBetweenSends( m_pNetworkManager, delayMsIn );
+
+	if( ret != eARNETWORK_ERROR::ARNETWORK_OK )
+	{
+		return false;
+	}
+
+	return true;
+}
+
+int CNetworkInterface::GetEstimatedLatency()
+{
+	// Get the estimated latency with the vehicle in milliseconds
+	// Negative value means it could not be determined
+	return ARNETWORK_Manager_GetEstimatedLatency( m_pNetworkManager );
+}
+
+int CNetworkInterface::GetEstimatedMissPercentage( EOutboundBufferId outboundBufferIdIn )
+{
+	// Get the estimated percent of packets being dropped
+	// Negative value is an error
+	return ARNETWORK_Manager_GetEstimatedMissPercentage( m_pNetworkManager, outboundBufferIdIn );
+}
+
 eARDISCOVERY_ERROR CNetworkInterface::ReceiveJsonCallback( uint8_t *rxDataIn, uint32_t rxDataSizeIn, char *ipIn, void *customDataIn )
 {
 	// Cast to get the network settings object
@@ -320,7 +467,18 @@ void CNetworkInterface::UnregisterDisconnectionCallback()
 	m_pDisconnectionCallback = nullptr;
 }
 
-eARNETWORK_MANAGER_CALLBACK_RETURN CNetworkInterface::CommandCallback( int bufferIdIn, uint8_t *dataIn, void *customDataIn, eARNETWORK_MANAGER_CALLBACK_STATUS causeIn )
+void CNetworkInterface::RegisterConnectionCallback( TConnectionCallback& callbackIn )
+{
+	// Register the callback function to be used upon successful connection
+	m_pConnectionCallback = callbackIn;
+}
+
+void CNetworkInterface::UnregisterConnectionCallback()
+{
+	m_pConnectionCallback = nullptr;
+}
+
+eARNETWORK_MANAGER_CALLBACK_RETURN CNetworkInterface::DefaultCommandCallback( int bufferIdIn, uint8_t *dataIn, void *customDataIn, eARNETWORK_MANAGER_CALLBACK_STATUS causeIn )
 {
     eARNETWORK_MANAGER_CALLBACK_RETURN retval = ARNETWORK_MANAGER_CALLBACK_RETURN_DEFAULT;
 

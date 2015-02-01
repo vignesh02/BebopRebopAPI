@@ -25,6 +25,7 @@ namespace rebop
 // Typedefs
 typedef std::function<void()> TDisconnectionCallback;
 typedef std::function<void()> TConnectionCallback;
+typedef std::function<eARNETWORK_MANAGER_CALLBACK_RETURN( int bufferIdIn, uint8_t *dataIn, void *customDataIn, eARNETWORK_MANAGER_CALLBACK_STATUS causeIn )> TCommandCallback;
 
 class CNetworkInterface
 {
@@ -32,6 +33,8 @@ public:
 	// Pointers
 	ARNETWORKAL_Manager_t 		*m_pNetworkALManager;
 	ARNETWORK_Manager_t 		*m_pNetworkManager;
+
+	TCommandCallback			m_pDefaultCommandCallback;
 
 	TConnectionCallback			m_pConnectionCallback;
 	TDisconnectionCallback		m_pDisconnectionCallback;
@@ -44,6 +47,9 @@ public:
 
 	// Attributes
 	CNetworkSettings m_networkSettings;
+
+	// Constants
+	const int m_kMaxBytesToRead = 131072;		// 128kb - arbitrary
 
 	// Methods
 	CNetworkInterface();
@@ -59,15 +65,15 @@ public:
 
 	// Wrapper functions
 	bool Flush();
-	bool SendData( const CDataPacket &dataIn, EOutputBufferId outputBufferIdIn );
-	bool ReadData( const CDataPacket &dataIn, EInputBufferId inputBufferIdIn );
-	bool TryReadData( const CDataPacket &dataIn, EInputBufferId inputBufferIdIn );
-	bool ReadDataWithTimeout( const CDataPacket &dataIn, EInputBufferId inputBufferIdIn, uint32_t timeoutMsIn );
-	bool FlushInputBuffer( EInputBufferId inputBufferIdIn );
-	bool FlushOutputBuffer( EOutputBufferId outputBufferIdIn );
+	bool SendData( const CDataPacket &dataIn, EOutboundBufferId outboundBufferIdIn, bool doDataCopyIn );
+	bool ReadData( CDataPacket& dataOut, EInboundBufferId inboundBufferIdIn );
+	bool TryReadData( CDataPacket& dataOut, EInboundBufferId inboundBufferIdIn );
+	bool ReadDataWithTimeout( CDataPacket& dataOut, EInboundBufferId inboundBufferIdIn, uint32_t timeoutMsIn );
+	bool FlushInboundBuffer( EInboundBufferId inboundBufferIdIn );
+	bool FlushOutboundBuffer( EOutboundBufferId outboundBufferIdIn );
 	bool SetMinimumTimeBetweenSends( uint32_t delayMsIn );
-	int GetEstimatedLatency( EOutputBufferId outputBufferIdIn );
-	int GetEstimatedMissPercentage();
+	int GetEstimatedLatency();
+	int GetEstimatedMissPercentage( EOutboundBufferId outboundBufferIdIn );
 
 	// Callback registration functions
 	void RegisterConnectionCallback( TConnectionCallback &callbackIn );
@@ -76,7 +82,7 @@ public:
 	void UnregisterDisconnectionCallback();
 
 	// Callback functions
-	static eARNETWORK_MANAGER_CALLBACK_RETURN CommandCallback( int bufferIdIn, uint8_t *dataIn, void *customDataIn, eARNETWORK_MANAGER_CALLBACK_STATUS causeIn );
+	static eARNETWORK_MANAGER_CALLBACK_RETURN DefaultCommandCallback( int bufferIdIn, uint8_t *dataIn, void *customDataIn, eARNETWORK_MANAGER_CALLBACK_STATUS causeIn );
 	static void OnDisconnect( ARNETWORK_Manager_t *networkManagerIn, ARNETWORKAL_Manager_t *networkALManagerIn, void *customDataIn );
 	static eARDISCOVERY_ERROR SendJsonCallback( uint8_t *txDataIn, uint32_t *txDataSizeIn, void *customDataIn );
 	static eARDISCOVERY_ERROR ReceiveJsonCallback( uint8_t *dataRxIn, uint32_t dataRxSizeIn, char *ipIn, void *customDataIn );
