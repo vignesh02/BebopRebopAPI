@@ -2,9 +2,6 @@
 #include "CBebopInterface.h"
 #include "Utility.hpp"
 
-// Set up easylogger
-INITIALIZE_EASYLOGGINGPP
-
 // Namespaces
 using namespace rebop;
 

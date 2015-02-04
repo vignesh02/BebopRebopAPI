@@ -2,58 +2,77 @@
 # Automatically-generated file. Do not edit!
 ################################################################################
 
--include ../makefile.init
-
 RM := rm -rf
 
-# All of the sources participating in the build are defined here
--include sources.mk
--include Source/subdir.mk
--include subdir.mk
--include objects.mk
 
-ifneq ($(MAKECMDGOALS),clean)
-ifneq ($(strip $(C++_DEPS)),)
--include $(C++_DEPS)
-endif
-ifneq ($(strip $(C_DEPS)),)
--include $(C_DEPS)
-endif
-ifneq ($(strip $(CC_DEPS)),)
--include $(CC_DEPS)
-endif
-ifneq ($(strip $(CPP_DEPS)),)
--include $(CPP_DEPS)
-endif
-ifneq ($(strip $(CXX_DEPS)),)
--include $(CXX_DEPS)
-endif
-ifneq ($(strip $(C_UPPER_DEPS)),)
--include $(C_UPPER_DEPS)
-endif
-endif
+LIBS :=
+O_SRCS :=
+CPP_SRCS :=
+C_UPPER_SRCS :=
+C_SRCS :=
+S_UPPER_SRCS :=
+OBJ_SRCS :=
+ASM_SRCS :=
+CXX_SRCS :=
+C++_SRCS :=
+CC_SRCS :=
+OBJS :=
+C++_DEPS :=
+C_DEPS :=
+CC_DEPS :=
+CPP_DEPS :=
+EXECUTABLES :=
+CXX_DEPS :=
+C_UPPER_DEPS := 
 
--include ../makefile.defs
 
 # Add inputs and outputs from these tool invocations to the build variables 
+CPP_SRCS += \
+../Source/CBebopInterface.cpp \
+../Source/CCommandPacket.cpp \
+../Source/CNetworkInterface.cpp \
+../Source/CNetworkSettings.cpp \
+../Source/CVehicleInterface.cpp 
+
+OBJS += \
+./CBebopInterface.o \
+./CCommandPacket.o \
+./CNetworkInterface.o \
+./CNetworkSettings.o \
+./CVehicleInterface.o 
+
+CPP_DEPS += \
+./CBebopInterface.d \
+./CCommandPacket.d \
+./CNetworkInterface.d \
+./CNetworkSettings.d \
+./CVehicleInterface.d 
 
 # All Target
-all: BebopRebopAPI
+all: libBebopRebopAPI.a
 
 # Tool invocations
-BebopRebopAPI: $(OBJS) $(USER_OBJS)
+libBebopRebopAPI.a: $(OBJS)
 	@echo 'Building target: $@'
-	@echo 'Invoking: GCC C++ Linker'
-	g++ -L../ThirdPartyLibs/ArDroneSDK3/lib -o "BebopRebopAPI" $(OBJS) $(USER_OBJS) $(LIBS)
+	@echo 'Invoking: GCC Archiver'
+	ar -r  "libBebopRebopAPI.a" $(OBJS)
 	@echo 'Finished building target: $@'
+	@echo 'Running post-build script to move files into their proper locations'
+	-../Scripts/postbuild.sh
+	
+%.o: ../Source/%.cpp
+	@echo 'Building file: $<'
+	@echo 'Invoking: GCC C++ Compiler'
+	g++ -I../ThirdPartyLibs/ArDroneSDK3/include -I../ThirdPartyLibs/RapidJson/include -I../ThirdPartyLibs/easyloggingpp/include -O0 -g3 -Wall -c -fmessage-length=0 -std=c++11 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<"
+	@echo 'Finished building: $<'
 	@echo ' '
 
 # Other Targets
 clean:
-	-$(RM) $(OBJS)$(C++_DEPS)$(C_DEPS)$(CC_DEPS)$(CPP_DEPS)$(EXECUTABLES)$(CXX_DEPS)$(C_UPPER_DEPS) BebopRebopAPI
+	-$(RM) $(OBJS)$(C++_DEPS)$(C_DEPS)$(CC_DEPS)$(ARCHIVES)$(CPP_DEPS)$(CXX_DEPS)$(C_UPPER_DEPS) libBebopRebopAPI.a 
 	-@echo ' '
 
 .PHONY: all clean dependents
-.SECONDARY:
+.SECONDARY: post-build
 
 -include ../makefile.targets

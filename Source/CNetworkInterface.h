@@ -82,9 +82,9 @@ public:
 	int GetEstimatedMissPercentage( EOutboundBufferId outboundBufferIdIn );
 
 	// Callback registration functions
-	void RegisterConnectionCallback( TConnectionCallback &callbackIn );
+	void RegisterConnectionCallback( TConnectionCallback callbackIn );
 	void UnregisterConnectionCallback();
-	void RegisterDisconnectionCallback( TDisconnectionCallback &callbackIn );
+	void RegisterDisconnectionCallback( TDisconnectionCallback callbackIn );
 	void UnregisterDisconnectionCallback();
 
 	// Callback functions

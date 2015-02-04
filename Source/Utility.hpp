@@ -1,5 +1,10 @@
-#include "easylogging.h"
+#pragma once
+
+#include <easylogging.h>
 #include <rapidjson/document.h>
+
+// Set up easylogger
+INITIALIZE_EASYLOGGINGPP
 
 // Semi-safe pointer deletion
 #define SafeDelete(pPtr) { delete pPtr; pPtr = nullptr; }
@@ -7,7 +12,7 @@
 namespace util
 {
 
-static bool ParseIntFromJsonString( const std::string &jsonStringIn, const std::string &keyIn, int &valueOut )
+bool ParseIntFromJsonString( const std::string &jsonStringIn, const std::string &keyIn, int &valueOut )
 {
 	// Parse the json string
 	rapidjson::Document document;
