@@ -6,7 +6,7 @@ using namespace rebop;
 
 CNetworkSettings::CNetworkSettings()
 {
-	// Init ports
+	// Init ports to default values
 	m_outboundPort 	= OUTBOUND_PORT;
 	m_inboundPort	= INBOUND_PORT;
 
@@ -57,9 +57,9 @@ void CNetworkSettings::InitializeIOParameters()
 	m_inboundParameters[ INBOUND_INDEX ].ID									= (int)EInboundBufferId::INBOUND;
 	m_inboundParameters[ INBOUND_INDEX ].dataType 							= eARNETWORKAL_FRAME_TYPE::ARNETWORKAL_FRAME_TYPE_DATA;
 	m_inboundParameters[ INBOUND_INDEX ].sendingWaitTimeMs 					= 20;
-	m_inboundParameters[ INBOUND_INDEX ].ackTimeoutMs 						= 500;
-	m_inboundParameters[ INBOUND_INDEX ].numberOfRetry 						= 3;
-	m_inboundParameters[ INBOUND_INDEX ].numberOfCell 						= 20;
+	m_inboundParameters[ INBOUND_INDEX ].ackTimeoutMs 						= -1;
+	m_inboundParameters[ INBOUND_INDEX ].numberOfRetry 						= -1;
+	m_inboundParameters[ INBOUND_INDEX ].numberOfCell 						= 10;
 	m_inboundParameters[ INBOUND_INDEX ].dataCopyMaxSize 					= 128;
 	m_inboundParameters[ INBOUND_INDEX ].isOverwriting 						= 0;
 
@@ -67,9 +67,9 @@ void CNetworkSettings::InitializeIOParameters()
 	m_inboundParameters[ INBOUND_WITH_ACK_INDEX ].ID 						= (int)EInboundBufferId::INBOUND_WITH_ACK;
 	m_inboundParameters[ INBOUND_WITH_ACK_INDEX ].dataType 					= eARNETWORKAL_FRAME_TYPE::ARNETWORKAL_FRAME_TYPE_DATA_WITH_ACK;
 	m_inboundParameters[ INBOUND_WITH_ACK_INDEX ].sendingWaitTimeMs 		= 20;
-	m_inboundParameters[ INBOUND_WITH_ACK_INDEX ].ackTimeoutMs	 			= -1;
-	m_inboundParameters[ INBOUND_WITH_ACK_INDEX ].numberOfRetry 			= -1;
-	m_inboundParameters[ INBOUND_WITH_ACK_INDEX ].numberOfCell 				= 10;
+	m_inboundParameters[ INBOUND_WITH_ACK_INDEX ].ackTimeoutMs	 			= 500;
+	m_inboundParameters[ INBOUND_WITH_ACK_INDEX ].numberOfRetry 			= 3;
+	m_inboundParameters[ INBOUND_WITH_ACK_INDEX ].numberOfCell 				= 20;
 	m_inboundParameters[ INBOUND_WITH_ACK_INDEX ].dataCopyMaxSize 			= 128;
 	m_inboundParameters[ INBOUND_WITH_ACK_INDEX ].isOverwriting 			= 0;
 }

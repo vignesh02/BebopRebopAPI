@@ -88,7 +88,7 @@ bool CNetworkInterface::PerformNetworkDiscovery()
 	// If successful, perform network discovery with the target
 	if( !failed )
 	{
-		eARDISCOVERY_ERROR err = ARDISCOVERY_Connection_ControllerConnection( discoveryData, m_networkSettings.DISCOVERY_PORT, m_networkSettings.TARGET_IP_ADDRESS );
+		eARDISCOVERY_ERROR err = ARDISCOVERY_Connection_ControllerConnection( discoveryData, m_networkSettings.DISCOVERY_PORT, m_networkSettings.TARGET_USB_IP_ADDRESS );
 
 		if( err != ARDISCOVERY_OK )
 		{
@@ -133,7 +133,7 @@ bool CNetworkInterface::InitializeNetworkManagers()
 	}
 
 	// Initialize the ARNetworkALManager
-	netAlError = ARNETWORKAL_Manager_InitWifiNetwork( m_pNetworkALManager, m_networkSettings.TARGET_IP_ADDRESS, m_networkSettings.m_outboundPort, m_networkSettings.m_inboundPort, timeoutSecs );
+	netAlError = ARNETWORKAL_Manager_InitWifiNetwork( m_pNetworkALManager, m_networkSettings.TARGET_USB_IP_ADDRESS, m_networkSettings.m_outboundPort, m_networkSettings.m_inboundPort, timeoutSecs );
 
 	if( netAlError != ARNETWORKAL_OK )
 	{
@@ -171,14 +171,15 @@ void CNetworkInterface::Cleanup()
 	// Close all connections, kill threads, and clean up memory used for networking
 	StopNetwork();
 
+	// TODO: Implement monitor thread
 	// Kill the monitor thread
-	if( m_tMonitorThread != nullptr )
-	{
-		m_killMonitor = true;
-		ARSAL_Thread_Join( m_tMonitorThread, nullptr );
-		ARSAL_Thread_Destroy( &( m_tMonitorThread ) );
-		m_tMonitorThread = nullptr;
-	}
+//	if( m_tMonitorThread != nullptr )
+//	{
+//		m_killMonitor = true;
+//		ARSAL_Thread_Join( m_tMonitorThread, nullptr );
+//		ARSAL_Thread_Destroy( &( m_tMonitorThread ) );
+//		m_tMonitorThread = nullptr;
+//	}
 
 	LOG( INFO ) << "Cleaned up AR Network Interface.";
 }
@@ -232,16 +233,17 @@ bool CNetworkInterface::StartNetworkThreads()
 
 	LOG( INFO ) << "Tx and Rx Threads started!";
 
-	LOG( INFO ) << "Starting Monitor Thread...";
-
-	// Create and start Tx Thread
-	if( ARSAL_Thread_Create( &( m_tMonitorThread ), MonitorThreadFunction, this ) != 0 )
-	{
-		LOG( ERROR ) << "Creation of Monitor thread failed.";
-		return false;
-	}
-
-	LOG( INFO ) << "Monitor Thread started!";
+	// TODO: Implement monitor thread
+//	LOG( INFO ) << "Starting Monitor Thread...";
+//
+//	// Create and start Monitor Thread
+//	if( ARSAL_Thread_Create( &( m_tMonitorThread ), MonitorThreadFunction, this ) != 0 )
+//	{
+//		LOG( ERROR ) << "Creation of Monitor thread failed.";
+//		return false;
+//	}
+//
+//	LOG( INFO ) << "Monitor Thread started!";
 
 	return true;
 }
@@ -319,6 +321,37 @@ eARDISCOVERY_ERROR CNetworkInterface::SendJsonCallback( uint8_t *txDataIn, uint3
     {
     	// Error occurred - inputs were null
     	LOG( ERROR ) << "SendJsonCallback() failed: No valid data buffer info provided.";
+    	return eARDISCOVERY_ERROR::ARDISCOVERY_ERROR;
+    }
+
+    return eARDISCOVERY_ERROR::ARDISCOVERY_OK;
+}
+
+eARDISCOVERY_ERROR CNetworkInterface::ReceiveJsonCallback( uint8_t *rxDataIn, uint32_t rxDataSizeIn, char *ipIn, void *customDataIn )
+{
+	// Cast to get the network settings object
+	CNetworkSettings *settings = (CNetworkSettings *)customDataIn;
+
+	if( settings == nullptr )
+	{
+		LOG( ERROR ) << "ReceiveJsonCallback() failed: Null network settings object.";
+		return eARDISCOVERY_ERROR::ARDISCOVERY_ERROR;
+	}
+
+    // Make sure we received data and have the device manager pointer
+    if( ( rxDataIn != nullptr ) && ( rxDataSizeIn != 0 ) )
+    {
+    	// Parse the port number from the string sent by the drone
+        if( !util::ParseIntFromJsonString( (const char*)rxDataIn, ARDISCOVERY_CONNECTION_JSON_C2DPORT_KEY, settings->m_outboundPort ) )
+        {
+        	// Failure
+        	LOG( ERROR ) << "ReceiveJsonCallback() failed: Unable to parse port number from JSON string.";
+        	return eARDISCOVERY_ERROR::ARDISCOVERY_ERROR;
+        }
+    }
+    else
+    {
+    	LOG( ERROR ) << "ReceiveJsonCallback() failed: No valid data received.";
     	return eARDISCOVERY_ERROR::ARDISCOVERY_ERROR;
     }
 
@@ -470,36 +503,6 @@ int CNetworkInterface::GetEstimatedMissPercentage( EOutboundBufferId outboundBuf
 	return ARNETWORK_Manager_GetEstimatedMissPercentage( m_pNetworkManager, (int)outboundBufferIdIn );
 }
 
-eARDISCOVERY_ERROR CNetworkInterface::ReceiveJsonCallback( uint8_t *rxDataIn, uint32_t rxDataSizeIn, char *ipIn, void *customDataIn )
-{
-	// Cast to get the network settings object
-	CNetworkSettings *settings = (CNetworkSettings *)customDataIn;
-
-	if( settings == nullptr )
-	{
-		LOG( ERROR ) << "ReceiveJsonCallback() failed: Null network settings object.";
-		return eARDISCOVERY_ERROR::ARDISCOVERY_ERROR;
-	}
-
-    // Make sure we received data and have the device manager pointer
-    if( ( rxDataIn != nullptr ) && ( rxDataSizeIn != 0 ) )
-    {
-    	// Parse the port number from the string sent by the drone
-        if( !util::ParseIntFromJsonString( (const char*)rxDataIn, ARDISCOVERY_CONNECTION_JSON_D2CPORT_KEY, settings->m_outboundPort ) )
-        {
-        	// Failure
-        	LOG( ERROR ) << "ReceiveJsonCallback() failed: Unable to parse port number from JSON string.";
-        	return eARDISCOVERY_ERROR::ARDISCOVERY_ERROR;
-        }
-    }
-    else
-    {
-    	LOG( ERROR ) << "ReceiveJsonCallback() failed: No valid data received.";
-    	return eARDISCOVERY_ERROR::ARDISCOVERY_ERROR;
-    }
-
-    return eARDISCOVERY_ERROR::ARDISCOVERY_OK;
-}
 
 void CNetworkInterface::RegisterDisconnectionCallback( TDisconnectionCallback callbackIn )
 {

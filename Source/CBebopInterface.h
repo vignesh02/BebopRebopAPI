@@ -21,6 +21,7 @@ public:
 	bool Takeoff();
 	bool Land();
 	bool Emergency();
+	bool FlatTrim();
 	bool NavigateHome( ENavigateHome startOrStopIn );
 	bool SendPilotCommand( const TPilotCommand &poseIn );
 	bool SetAutoTakeoffMode( EAutoTakeoffMode modeIn );

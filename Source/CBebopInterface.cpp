@@ -459,6 +459,33 @@ bool CBebopInterface::SetGpsHomeLocation( const TGpsHomeLocation& locationIn )
 	return true;
 }
 
+bool rebop::CBebopInterface::FlatTrim()
+{
+	CCommandPacket packet( 128 );
+
+	// Generate command
+	eARCOMMANDS_GENERATOR_ERROR cmdError = ARCOMMANDS_Generator_GenerateARDrone3PilotingFlatTrim(
+			packet.m_pData,
+			packet.m_bufferSize,
+			&packet.m_dataSize );
+
+	if( cmdError == ARCOMMANDS_GENERATOR_OK )
+	{
+		// Command should be acknowledged
+		if( !m_networkInterface.SendData( packet, EOutboundBufferId::OUTBOUND_WITH_ACK, true ) )
+		{
+			LOG( ERROR ) << "Failed to send takeoff command.";
+			return false;
+		}
+	}
+	else
+	{
+		LOG( ERROR ) << "Failed to generate flat trim command. Err: " << cmdError;
+		return false;
+	}
+
+	return true;
+}
 
 bool CBebopInterface::ResetGpsHome()
 {
