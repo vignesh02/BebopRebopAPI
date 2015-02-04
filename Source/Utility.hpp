@@ -1,13 +1,7 @@
-<<<<<<< HEAD
-=======
 #pragma once
 
->>>>>>> 514830fb8bc79f96d84021b583598aefe7761673
 #include <easylogging.h>
 #include <rapidjson/document.h>
-
-// Set up easylogger
-INITIALIZE_EASYLOGGINGPP
 
 // Semi-safe pointer deletion
 #define SafeDelete(pPtr) { delete pPtr; pPtr = nullptr; }

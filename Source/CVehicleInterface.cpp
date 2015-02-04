@@ -2,7 +2,7 @@
 #include "CVehicleInterface.h"
 #include "Utility.hpp"
 
-// Enable logging
+// Set up easylogger
 INITIALIZE_EASYLOGGINGPP
 
 // Namespaces
