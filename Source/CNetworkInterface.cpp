@@ -501,7 +501,7 @@ eARDISCOVERY_ERROR CNetworkInterface::ReceiveJsonCallback( uint8_t *rxDataIn, ui
     return eARDISCOVERY_ERROR::ARDISCOVERY_OK;
 }
 
-void CNetworkInterface::RegisterDisconnectionCallback( TDisconnectionCallback &callbackIn )
+void CNetworkInterface::RegisterDisconnectionCallback( TDisconnectionCallback callbackIn )
 {
 	// Register the callback function to be used upon disconnection
 	m_pDisconnectionCallback = callbackIn;
@@ -512,7 +512,7 @@ void CNetworkInterface::UnregisterDisconnectionCallback()
 	m_pDisconnectionCallback = nullptr;
 }
 
-void CNetworkInterface::RegisterConnectionCallback( TConnectionCallback& callbackIn )
+void CNetworkInterface::RegisterConnectionCallback( TConnectionCallback callbackIn )
 {
 	// Register the callback function to be used upon successful connection
 	m_pConnectionCallback = callbackIn;
