@@ -4,10 +4,6 @@
 
 RM := rm -rf
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 514830fb8bc79f96d84021b583598aefe7761673
 LIBS :=
 O_SRCS :=
 CPP_SRCS :=
@@ -66,11 +62,7 @@ libBebopRebopAPI.a: $(OBJS)
 %.o: ../Source/%.cpp
 	@echo 'Building file: $<'
 	@echo 'Invoking: GCC C++ Compiler'
-<<<<<<< HEAD
 	g++ -I../ThirdPartyLibs/ArDroneSDK3/include -I../ThirdPartyLibs/rapidjson/include -I../ThirdPartyLibs/easyloggingpp/include -O0 -g3 -Wall -c -fmessage-length=0 -std=c++11 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<"
-=======
-	g++ -I../ThirdPartyLibs/ArDroneSDK3/include -I../ThirdPartyLibs/RapidJson/include -I../ThirdPartyLibs/easyloggingpp/include -O0 -g3 -Wall -c -fmessage-length=0 -std=c++11 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<"
->>>>>>> 514830fb8bc79f96d84021b583598aefe7761673
 	@echo 'Finished building: $<'
 	@echo ' '
 
