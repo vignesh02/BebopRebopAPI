@@ -2,6 +2,9 @@
 #include "CVehicleInterface.h"
 #include "Utility.hpp"
 
+// Enable logging
+INITIALIZE_EASYLOGGINGPP
+
 // Namespaces
 using namespace rebop;
 

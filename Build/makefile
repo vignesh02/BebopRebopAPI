@@ -69,7 +69,7 @@ libBebopRebopAPI.a: $(OBJS)
 
 # Other Targets
 clean:
-	-$(RM) $(OBJS)$(C++_DEPS)$(C_DEPS)$(CC_DEPS)$(ARCHIVES)$(CPP_DEPS)$(CXX_DEPS)$(C_UPPER_DEPS) libBebopRebopAPI.a 
+	-$(RM) $(OBJS)$(C++_DEPS)$(C_DEPS)$(CC_DEPS)$(ARCHIVES)$(CPP_DEPS)$(CXX_DEPS)$(C_UPPER_DEPS) libBebopRebopAPI.a include/ lib/ ThirdPartyLibs/
 	-@echo ' '
 
 .PHONY: all clean dependents
