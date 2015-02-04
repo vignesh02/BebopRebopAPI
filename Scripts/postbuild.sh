@@ -11,4 +11,4 @@ cp ../Source/*.h* ../Build/include/
 # Move the lib file to the lib folder
 mv ./libBebopRebopAPI.a ../Build/lib/
 
-rm ./*.d ./*.o
+rm ./Build/*.d ./Build/*.o 
