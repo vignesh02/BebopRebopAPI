@@ -9,7 +9,7 @@
 namespace util
 {
 
-bool ParseIntFromJsonString( const std::string &jsonStringIn, const std::string &keyIn, int &valueOut )
+static bool ParseIntFromJsonString( const std::string &jsonStringIn, const std::string &keyIn, int &valueOut )
 {
 	// Parse the json string
 	rapidjson::Document document;

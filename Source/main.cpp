@@ -20,7 +20,16 @@ int main()
 	else
 	{
 		LOG( ERROR ) << "Ready to do stuff!";
+
+		std::string temp;
+		LOG( INFO ) << "Enter anything to take off.";
+		std::cin >> temp;
+
 		bebop.Takeoff();
+
+		LOG( INFO ) << "Enter anything to land.";
+		std::cin >> temp;
+
 		bebop.Land();
 	}
 
