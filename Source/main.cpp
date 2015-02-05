@@ -25,11 +25,13 @@ int main()
 		LOG( INFO ) << "Enter anything to take off.";
 		std::cin >> temp;
 
+		// Take off
 		bebop.Takeoff();
 
 		LOG( INFO ) << "Enter anything to land.";
 		std::cin >> temp;
 
+		// Land
 		bebop.Land();
 	}
 
