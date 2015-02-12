@@ -1,6 +1,7 @@
 // Includes
 #include "CNetworkInterface.h"
-#include "Utility.hpp"
+
+#include "Utility.h"
 
 // Namespaces
 using namespace std;

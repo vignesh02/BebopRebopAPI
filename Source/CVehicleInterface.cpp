@@ -1,6 +1,7 @@
 // Includes
 #include "CVehicleInterface.h"
-#include "Utility.hpp"
+
+#include "Utility.h"
 
 // Set up easylogger
 INITIALIZE_EASYLOGGINGPP

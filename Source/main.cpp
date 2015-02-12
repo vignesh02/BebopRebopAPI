@@ -1,6 +1,6 @@
 // Includes
 #include "CBebopInterface.h"
-#include "Utility.hpp"
+#include "Utility.h"
 
 // Namespaces
 using namespace rebop;

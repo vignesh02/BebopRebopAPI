@@ -2,7 +2,7 @@
 
 // Includes
 #include "CNetworkInterface.h"
-#include "Utility.hpp"
+#include "Utility.h"
 
 namespace rebop
 {
