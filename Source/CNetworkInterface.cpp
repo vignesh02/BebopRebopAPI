@@ -89,7 +89,7 @@ bool CNetworkInterface::PerformNetworkDiscovery()
 	// If successful, perform network discovery with the target
 	if( !failed )
 	{
-		eARDISCOVERY_ERROR err = ARDISCOVERY_Connection_ControllerConnection( discoveryData, m_networkSettings.DISCOVERY_PORT, m_networkSettings.TARGET_USB_IP_ADDRESS );
+		eARDISCOVERY_ERROR err = ARDISCOVERY_Connection_ControllerConnection( discoveryData, m_networkSettings.DISCOVERY_PORT, m_networkSettings.TARGET_WIFI_IP_ADDRESS );
 
 		if( err != ARDISCOVERY_OK )
 		{
@@ -134,7 +134,7 @@ bool CNetworkInterface::InitializeNetworkManagers()
 	}
 
 	// Initialize the ARNetworkALManager
-	netAlError = ARNETWORKAL_Manager_InitWifiNetwork( m_pNetworkALManager, m_networkSettings.TARGET_USB_IP_ADDRESS, m_networkSettings.m_outboundPort, m_networkSettings.m_inboundPort, timeoutSecs );
+	netAlError = ARNETWORKAL_Manager_InitWifiNetwork( m_pNetworkALManager, m_networkSettings.TARGET_WIFI_IP_ADDRESS, m_networkSettings.m_outboundPort, m_networkSettings.m_inboundPort, timeoutSecs );
 
 	if( netAlError != ARNETWORKAL_OK )
 	{
@@ -226,7 +226,7 @@ bool CNetworkInterface::StartNetworkThreads()
 	}
 
 	// Create and start Tx Thread
-	if( ARSAL_Thread_Create( &( m_tRxThread ), ARNETWORK_Manager_SendingThreadRun, m_pNetworkManager ) != 0 )
+	if( ARSAL_Thread_Create( &( m_tTxThread ), ARNETWORK_Manager_SendingThreadRun, m_pNetworkManager ) != 0 )
 	{
 		LOG( ERROR ) << "Creation of Tx thread failed.";
 		return false;
@@ -406,6 +406,7 @@ bool CNetworkInterface::ReadData( CCommandPacket& dataOut, EInboundBufferId inbo
 
 	if( ret != eARNETWORK_ERROR::ARNETWORK_OK )
 	{
+		LOG( ERROR ) << "Tried reading data, but failed miserably!";
 		return false;
 	}
 

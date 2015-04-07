@@ -19,7 +19,7 @@ int main()
 	}
 	else
 	{
-		LOG( ERROR ) << "Ready to do stuff!";
+		LOG( INFO ) << "Ready to do stuff!";
 
 		std::string temp;
 		LOG( INFO ) << "Enter anything to take off.";
