@@ -1,7 +1,6 @@
 #pragma once
 
 // Includes
-#include <vector>
 #include <string>
 #include <functional>
 
@@ -26,40 +25,47 @@ namespace rebop
 typedef std::function<void()> TDisconnectionCallback;
 typedef std::function<void()> TConnectionCallback;
 typedef std::function<eARNETWORK_MANAGER_CALLBACK_RETURN( int bufferIdIn, uint8_t *dataIn, void *customDataIn, eARNETWORK_MANAGER_CALLBACK_STATUS causeIn )> TCommandCallback;
+typedef struct
+{
+	void *networkInterface;
+	EInboundBufferId bufferID;
+} Rx_Threads_Data_t;
 
 class CNetworkInterface
 {
 public:
 	// Pointers
-	ARNETWORKAL_Manager_t 		*m_pNetworkALManager;
-	ARNETWORK_Manager_t 		*m_pNetworkManager;
+	ARNETWORKAL_Manager_t 		  *	m_pNetworkALManager;
+	ARNETWORK_Manager_t 		  *	m_pNetworkManager;
 
-	TCommandCallback			m_pDefaultCommandCallback;
-	TConnectionCallback			m_pConnectionCallback;
-	TDisconnectionCallback		m_pDisconnectionCallback;
+	TCommandCallback				m_pDefaultCommandCallback;
+	TConnectionCallback				m_pConnectionCallback;
+	TDisconnectionCallback			m_pDisconnectionCallback;
 
 	// Threads
-	ARSAL_Thread_t 				m_tRxThread;
-	ARSAL_Thread_t 				m_tTxThread;
-	ARSAL_Thread_t				m_tMonitorThread;
+	ARSAL_Thread_t 					m_tRxThread;
+	ARSAL_Thread_t 					m_tTxThread;
+	ARSAL_Thread_t					m_tMonitorThread;
 
-	std::vector<ARSAL_Thread_t>	m_tRxThreads;
+	std::array<ARSAL_Thread_t, 2>	m_tRxThreads;	// Threads to read data from buffer
 
 	// Attributes
-	CNetworkSettings m_networkSettings;
+	CNetworkSettings 				m_networkSettings;
+	std::array<Rx_Threads_Data_t, 2> m_tRxThreads_data;
 
-	bool m_killMonitor;
-	bool m_isConnected;
+	bool 							m_killMonitor;
+	bool 							m_isConnected;
+	bool							m_isRunning;
 
 	// Constants
-	static const uint32_t m_kMonitorRetryDelay 	= 5;
-	static const int m_kMaxBytesToRead 			= 131072;		// 128kb - arbitrary
+	static const uint32_t 			m_kMonitorRetryDelay 	= 5;
+	static const int 				m_kMaxBytesToRead 		= 128 * 1024;		// 128kb - arbitrary
 
 	// Methods
 	CNetworkInterface();
 	virtual ~CNetworkInterface();
 
-	// Composite behaviour functions
+	// Composite behavior functions
 	bool Initialize();
 	bool PerformNetworkDiscovery();
 	bool InitializeNetworkManagers();
@@ -78,6 +84,7 @@ public:
 	bool SetMinimumTimeBetweenSends( uint32_t delayMsIn );
 	int GetEstimatedLatency();
 	int GetEstimatedMissPercentage( EOutboundBufferId outboundBufferIdIn );
+	void DecodeData( CCommandPacket& dataOut);
 
 	// Callback registration functions
 	void RegisterConnectionCallback( TConnectionCallback callbackIn );
@@ -91,8 +98,9 @@ public:
 	static eARDISCOVERY_ERROR SendJsonCallback( uint8_t *txDataIn, uint32_t *txDataSizeIn, void *customDataIn );
 	static eARDISCOVERY_ERROR ReceiveJsonCallback( uint8_t *dataRxIn, uint32_t dataRxSizeIn, char *ipIn, void *customDataIn );
 
-	// Monitor thread function
+	// Monitor/Reader thread function
 	static void* MonitorThreadFunction( void* dataIn );
+	static void* ReaderThreadFunction( void* dataIn );
 };
 
 }

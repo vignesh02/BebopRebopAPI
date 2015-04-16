@@ -16,7 +16,11 @@ enum class EInboundBufferId
 enum class EOutboundBufferId
 {
 	OUTBOUND							= 10,
-	OUTBOUND_WITH_ACK					= 11,
+	OUTBOUND_WITH_ACK					= 11
+};
+enum class EEmergencyBufferId
+{
+	EMERGENCY							= 12
 };
 
 class CNetworkSettings
@@ -26,6 +30,7 @@ public:
 	// Indices for your arrays
 	const int OUTBOUND_INDEX 				= 0;
 	const int OUTBOUND_WITH_ACK_INDEX		= 1;
+	const int EMERGENCY_INDEX				= 2;
 	const int INBOUND_INDEX					= 0;
 	const int INBOUND_WITH_ACK_INDEX 		= 1;
 
@@ -39,9 +44,16 @@ public:
 	int m_outboundPort;		// This is the port we write to. We'll ask the target for the port they are using during discovery. By default, this is 54321.
 	int m_inboundPort;		// This is the port we listen on. We'll tell the target what this is during discovery. By default this is 43210.
 
-	// These are parameters for your I/O buffers. Generally you'll have four I/O buffers: two for outbound messages, two for inbound messages, each with an ACK and NONACK version.
-	std::array<ARNETWORK_IOBufferParam_t, 2> m_outboundParameters;
+	// These are parameters for your I/O buffers. Generally you'll have five I/O buffers: three for outbound messages, two for inbound messages, each with an ACK and NONACK version.
+	std::array<ARNETWORK_IOBufferParam_t, 3> m_outboundParameters;
 	std::array<ARNETWORK_IOBufferParam_t, 2> m_inboundParameters;
+
+	//array for inbound buffer IDs
+	EInboundBufferId inboundBufferIDs [2]
+	{
+		EInboundBufferId::INBOUND,
+			EInboundBufferId::INBOUND_WITH_ACK
+	};
 
 	// Methods
 	CNetworkSettings();

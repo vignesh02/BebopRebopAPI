@@ -36,12 +36,12 @@ void CNetworkSettings::InitializeIOParameters()
 	// Outbound without ack
 	m_outboundParameters[ OUTBOUND_INDEX ].ID								= (int)EOutboundBufferId::OUTBOUND;
 	m_outboundParameters[ OUTBOUND_INDEX ].dataType 						= eARNETWORKAL_FRAME_TYPE::ARNETWORKAL_FRAME_TYPE_DATA;
-	m_outboundParameters[ OUTBOUND_INDEX ].sendingWaitTimeMs 				= 5;
+	m_outboundParameters[ OUTBOUND_INDEX ].sendingWaitTimeMs 				= 20;
 	m_outboundParameters[ OUTBOUND_INDEX ].ackTimeoutMs 					= -1;
 	m_outboundParameters[ OUTBOUND_INDEX ].numberOfRetry 					= -1;
-	m_outboundParameters[ OUTBOUND_INDEX ].numberOfCell 					= 10;
+	m_outboundParameters[ OUTBOUND_INDEX ].numberOfCell 					= 2;
 	m_outboundParameters[ OUTBOUND_INDEX ].dataCopyMaxSize 					= 128;
-	m_outboundParameters[ OUTBOUND_INDEX ].isOverwriting 					= 0;
+	m_outboundParameters[ OUTBOUND_INDEX ].isOverwriting 					= 1;
 
 	// Outbound with ack
 	m_outboundParameters[ OUTBOUND_WITH_ACK_INDEX ].ID 						= (int)EOutboundBufferId::OUTBOUND_WITH_ACK;
@@ -52,6 +52,16 @@ void CNetworkSettings::InitializeIOParameters()
 	m_outboundParameters[ OUTBOUND_WITH_ACK_INDEX ].numberOfCell 			= 20;
 	m_outboundParameters[ OUTBOUND_WITH_ACK_INDEX ].dataCopyMaxSize 		= 128;
 	m_outboundParameters[ OUTBOUND_WITH_ACK_INDEX ].isOverwriting 			= 0;
+
+	//Emergency commands
+	m_outboundParameters[ EMERGENCY_INDEX ].ID 								= (int)EEmergencyBufferId::EMERGENCY;
+	m_outboundParameters[ EMERGENCY_INDEX ].dataType 						= eARNETWORKAL_FRAME_TYPE::ARNETWORKAL_FRAME_TYPE_DATA_WITH_ACK;
+	m_outboundParameters[ EMERGENCY_INDEX ].sendingWaitTimeMs 				= 10;
+	m_outboundParameters[ EMERGENCY_INDEX ].ackTimeoutMs 					= 100;
+	m_outboundParameters[ EMERGENCY_INDEX ].numberOfRetry 					= -1;
+	m_outboundParameters[ EMERGENCY_INDEX ].numberOfCell 					= 1;
+	m_outboundParameters[ EMERGENCY_INDEX ].dataCopyMaxSize 				= 128;
+	m_outboundParameters[ EMERGENCY_INDEX ].isOverwriting 					= 0;
 
 	// Inbound without ack
 	m_inboundParameters[ INBOUND_INDEX ].ID									= (int)EInboundBufferId::INBOUND;
