@@ -19,6 +19,7 @@ CNetworkInterface::CNetworkInterface()
 	// Init attributes
 	m_killMonitor				= false;
 	m_isConnected				= false;
+	m_isRunning					= false;
 }
 
 CNetworkInterface::~CNetworkInterface()
@@ -44,11 +45,14 @@ bool CNetworkInterface::Initialize()
 	}
 
 	// Start network connection with drone
+	m_isRunning = true;
 	if( !StartNetworkThreads() )
 	{
 		m_isConnected = false;
 		return false;
 	}
+
+
 
 	LOG( INFO ) << "AR Network Interface successfully initialized.";
 
@@ -89,7 +93,7 @@ bool CNetworkInterface::PerformNetworkDiscovery()
 	// If successful, perform network discovery with the target
 	if( !failed )
 	{
-		eARDISCOVERY_ERROR err = ARDISCOVERY_Connection_ControllerConnection( discoveryData, m_networkSettings.DISCOVERY_PORT, m_networkSettings.TARGET_USB_IP_ADDRESS );
+		eARDISCOVERY_ERROR err = ARDISCOVERY_Connection_ControllerConnection( discoveryData, m_networkSettings.DISCOVERY_PORT, m_networkSettings.TARGET_WIFI_IP_ADDRESS );
 
 		if( err != ARDISCOVERY_OK )
 		{
@@ -134,7 +138,7 @@ bool CNetworkInterface::InitializeNetworkManagers()
 	}
 
 	// Initialize the ARNetworkALManager
-	netAlError = ARNETWORKAL_Manager_InitWifiNetwork( m_pNetworkALManager, m_networkSettings.TARGET_USB_IP_ADDRESS, m_networkSettings.m_outboundPort, m_networkSettings.m_inboundPort, timeoutSecs );
+	netAlError = ARNETWORKAL_Manager_InitWifiNetwork( m_pNetworkALManager, m_networkSettings.TARGET_WIFI_IP_ADDRESS, m_networkSettings.m_outboundPort, m_networkSettings.m_inboundPort, timeoutSecs );
 
 	if( netAlError != ARNETWORKAL_OK )
 	{
@@ -168,6 +172,9 @@ bool CNetworkInterface::InitializeNetworkManagers()
 void CNetworkInterface::Cleanup()
 {
 	LOG( INFO ) << "Cleaning up AR Network Interface...";
+
+	// break threads
+	m_isRunning = false;
 
 	// Close all connections, kill threads, and clean up memory used for networking
 	StopNetwork();
@@ -226,13 +233,28 @@ bool CNetworkInterface::StartNetworkThreads()
 	}
 
 	// Create and start Tx Thread
-	if( ARSAL_Thread_Create( &( m_tRxThread ), ARNETWORK_Manager_SendingThreadRun, m_pNetworkManager ) != 0 )
+	if( ARSAL_Thread_Create( &( m_tTxThread ), ARNETWORK_Manager_SendingThreadRun, m_pNetworkManager ) != 0 )
 	{
 		LOG( ERROR ) << "Creation of Tx thread failed.";
 		return false;
 	}
 
 	LOG( INFO ) << "Tx and Rx Threads started!";
+
+	//Create and start reader Threads
+	for( unsigned short readerIndex = 0; readerIndex < m_tRxThreads.size(); ++readerIndex)
+	{
+		m_tRxThreads_data[ readerIndex ].networkInterface = this;
+		m_tRxThreads_data[ readerIndex ].bufferID = ( &m_networkSettings ) -> inboundBufferIDs[ readerIndex ];
+
+		if( ARSAL_Thread_Create( &( m_tRxThreads.data()[ readerIndex ] ), ReaderThreadFunction, &( m_tRxThreads_data.data()[ readerIndex ] ) ) != 0)
+		{
+			LOG( ERROR ) << "Creation of reader Thread " << readerIndex << " failed.";
+			return false;
+		}
+	}
+
+	LOG( INFO ) << "Reader Threads started!";
 
 	// TODO: Implement monitor thread
 //	LOG( INFO ) << "Starting Monitor Thread...";
@@ -258,6 +280,17 @@ void CNetworkInterface::StopNetwork()
 	{
 		// Stop the network manager
 		ARNETWORK_Manager_Stop( m_pNetworkManager );
+
+		//Clean up reader threads
+		for( unsigned short readerIndex = 0; readerIndex < m_tRxThreads.size(); ++readerIndex )
+		{
+			if(m_tRxThreads.data()[readerIndex] != nullptr)
+			{
+				ARSAL_Thread_Join( m_tRxThreads.data()[ readerIndex ], nullptr );
+				ARSAL_Thread_Destroy( &( m_tRxThreads.data()[ readerIndex ] ) );
+				m_tRxThreads.data()[readerIndex] = nullptr;
+			}
+		}
 
 		// Clean up the Rx thread
 		if( m_tRxThread != nullptr )
@@ -402,7 +435,7 @@ bool CNetworkInterface::ReadData( CCommandPacket& dataOut, EInboundBufferId inbo
 		(int)inboundBufferIdIn,
 		dataOut.m_pData,
 		m_kMaxBytesToRead,
-		&dataOut.m_bufferSize );
+		&dataOut.m_dataSize );
 
 	if( ret != eARNETWORK_ERROR::ARNETWORK_OK )
 	{
@@ -420,7 +453,7 @@ bool CNetworkInterface::TryReadData( CCommandPacket& dataOut, EInboundBufferId i
 		(int)inboundBufferIdIn,
 		dataOut.m_pData,
 		m_kMaxBytesToRead,
-		&dataOut.m_bufferSize );
+		&dataOut.m_dataSize );
 
 	if( ret != eARNETWORK_ERROR::ARNETWORK_OK )
 	{
@@ -438,7 +471,7 @@ bool CNetworkInterface::ReadDataWithTimeout( CCommandPacket& dataOut, EInboundBu
 		(int)inboundBufferIdIn,
 		dataOut.m_pData,
 		m_kMaxBytesToRead,
-		&dataOut.m_bufferSize,
+		&dataOut.m_dataSize,
 		timeoutMsIn );
 
 	if( ret != eARNETWORK_ERROR::ARNETWORK_OK )
@@ -504,6 +537,17 @@ int CNetworkInterface::GetEstimatedMissPercentage( EOutboundBufferId outboundBuf
 	return ARNETWORK_Manager_GetEstimatedMissPercentage( m_pNetworkManager, (int)outboundBufferIdIn );
 }
 
+void CNetworkInterface::DecodeData(CCommandPacket& dataOut)
+{
+	eARCOMMANDS_DECODER_ERROR cmdError = ARCOMMANDS_DECODER_OK;
+	cmdError = ARCOMMANDS_Decoder_DecodeBuffer (dataOut.m_pData, dataOut.m_dataSize);
+	if ((cmdError != ARCOMMANDS_DECODER_OK) && (cmdError != ARCOMMANDS_DECODER_ERROR_NO_CALLBACK))
+	{
+		char msg[128];
+		ARCOMMANDS_Decoder_DescribeBuffer (dataOut.m_pData, dataOut.m_dataSize, msg, sizeof(msg));
+		LOG( ERROR ) << "ARCOMMANDS_Decoder_DecodeBuffer () failed : " << cmdError << msg;
+	}
+}
 
 void CNetworkInterface::RegisterDisconnectionCallback( TDisconnectionCallback callbackIn )
 {
@@ -627,6 +671,43 @@ void* CNetworkInterface::MonitorThreadFunction( void* dataIn )
 
 	// Stop network and do cleanup
 	networkInterface->StopNetwork();
+
+	return nullptr;
+}
+
+void* CNetworkInterface::ReaderThreadFunction( void* dataIn )
+{
+	CCommandPacket readData( m_kMaxBytesToRead );
+
+	if( readData.m_pData == nullptr)
+	{
+		LOG( ERROR ) << "Couldn't allocate memory for reader thread. Reader thread not active.";
+		return nullptr;
+	}
+
+	if( dataIn == nullptr)
+	{
+		LOG( ERROR ) << "Invalid pointer given to reader thread. Reader thread not active.";
+		return nullptr;
+	}
+
+	CNetworkInterface *networkInterface = ( CNetworkInterface* ) ( ( Rx_Threads_Data_t* ) dataIn ) -> networkInterface;
+	EInboundBufferId bufferID = ( ( Rx_Threads_Data_t* ) dataIn ) -> bufferID;
+
+	if( networkInterface == nullptr )
+	{
+		LOG( ERROR ) << "Invalid pointer to networkInterface passed to reader thread. Reader thread not active.";
+		return nullptr;
+	}
+
+
+	while( networkInterface -> m_isRunning )
+	{
+		if(networkInterface->ReadDataWithTimeout(readData, bufferID, 1000))
+		{
+			networkInterface->DecodeData(readData);
+		}
+	}
 
 	return nullptr;
 }

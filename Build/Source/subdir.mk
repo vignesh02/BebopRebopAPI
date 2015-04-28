@@ -9,6 +9,7 @@ CPP_SRCS += \
 ../Source/CNetworkInterface.cpp \
 ../Source/CNetworkSettings.cpp \
 ../Source/CVehicleInterface.cpp \
+../Source/Utility.cpp \
 ../Source/main.cpp 
 
 OBJS += \
@@ -17,6 +18,7 @@ OBJS += \
 ./Source/CNetworkInterface.o \
 ./Source/CNetworkSettings.o \
 ./Source/CVehicleInterface.o \
+./Source/Utility.o \
 ./Source/main.o 
 
 CPP_DEPS += \
@@ -25,6 +27,7 @@ CPP_DEPS += \
 ./Source/CNetworkInterface.d \
 ./Source/CNetworkSettings.d \
 ./Source/CVehicleInterface.d \
+./Source/Utility.d \
 ./Source/main.d 
 
 

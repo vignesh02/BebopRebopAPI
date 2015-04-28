@@ -1,4 +1,5 @@
-/Debug/
-/Build/include/
-/Build/lib/
-/Build/ThirdPartyLibs/
+*.[od]
+*.mk~
+logs/
+Default/
+Build/BebopRebopAPI
